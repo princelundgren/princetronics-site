@@ -161,7 +161,7 @@ Rules, in this order. "Redirect to P" means `301` with `location: https://www.pr
 
 **Files:**
 - Create: `infra/lib/ci-stack.ts`, `infra/test/ci-stack.test.ts`
-- Modify: `.github/workflows/ci.yml` (an `infra` job), `AGENTS.md` (the `infra/` commands and the context inputs), the spec's *AWS access from CI* (`sub` pinned to `main` instead of an environment: GitHub Free offers no environments to private repositories; the maintainer confirms this before the task starts)
+- Modify: `.github/workflows/ci.yml` (an `infra` job), `AGENTS.md` (the `infra/` commands and the context inputs)
 
 **Interfaces:**
 - Consumes: `SiteStack.bucket`, `SiteStack.viewerRequest`, `Inputs.contentRepo`, `Inputs.oidcProviderArn`.
