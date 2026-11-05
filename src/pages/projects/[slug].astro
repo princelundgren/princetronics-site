@@ -1,0 +1,17 @@
+---
+import { render } from 'astro:content';
+import EntryLayout from '../../layouts/EntryLayout.astro';
+import { publishedEntries } from '../../lib/entries';
+
+export async function getStaticPaths() {
+  const projects = await publishedEntries('projects');
+  return projects.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+}
+
+const { entry } = Astro.props;
+const { Content, headings } = await render(entry);
+---
+
+<EntryLayout entry={entry} section="projects" headings={headings}>
+  <Content />
+</EntryLayout>
