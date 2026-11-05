@@ -1,0 +1,20 @@
+---
+import { buildThread } from '../lib/comments';
+import type { Comment } from '../lib/schemas';
+import CommentThread from './CommentThread.astro';
+
+interface Props {
+  comments: Comment[];
+}
+
+const thread = buildThread(Astro.props.comments);
+---
+
+{
+  thread.length > 0 && (
+    <section class="earlier-discussion">
+      <h2>Earlier discussion</h2>
+      <CommentThread nodes={thread} />
+    </section>
+  )
+}

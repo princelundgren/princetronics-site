@@ -2,10 +2,12 @@ import { join } from 'node:path';
 import { defineCollection, reference } from 'astro:content';
 import { file, glob } from 'astro/loaders';
 import { z } from 'astro/zod';
+import { checkCommentFilesHaveEntries } from './lib/comment-files';
 import { resolveContentDir } from './lib/content-dir';
 import { commentFileSchema, learningSchema, makeArticleSchema, makeProjectSchema, pageSchema } from './lib/schemas';
 
 const contentDir = resolveContentDir(process.env, process.cwd());
+checkCommentFilesHaveEntries(contentDir);
 
 const projects = defineCollection({
   loader: glob({ base: join(contentDir, 'projects'), pattern: '*.{md,mdx}' }),

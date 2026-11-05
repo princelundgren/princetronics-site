@@ -1,7 +1,9 @@
 ---
 import { render } from 'astro:content';
+import EarlierDiscussion from '../../components/EarlierDiscussion.astro';
 import EntryLayout from '../../layouts/EntryLayout.astro';
 import { publishedEntries } from '../../lib/entries';
+import { oldCommentsFor } from '../../lib/old-comments';
 
 export async function getStaticPaths() {
   const projects = await publishedEntries('projects');
@@ -10,8 +12,10 @@ export async function getStaticPaths() {
 
 const { entry } = Astro.props;
 const { Content, headings } = await render(entry);
+const oldComments = await oldCommentsFor('projects', entry.id);
 ---
 
 <EntryLayout entry={entry} section="projects" headings={headings}>
   <Content />
+  <EarlierDiscussion slot="discussion" comments={oldComments} />
 </EntryLayout>

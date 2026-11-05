@@ -17,6 +17,11 @@ describe('project and article pages', () => {
     expect(page('projects/read-433mhz-codes/index.html')).toMatch(/<span class="date">[^<]*<time[^>]*>Jun 2014<\/time>, updated 2026<\/span>/);
   });
 
+  it('shows old comments under the entry they belong to, and only there', () => {
+    expect(page('projects/read-433mhz-codes/index.html')).toContain('id="comment-101"');
+    expect(page('projects/fpv-drone/index.html')).not.toContain('Earlier discussion');
+  });
+
   it('renders a showcase project without a parts table', () => {
     expect(page('projects/fpv-drone/index.html')).not.toContain('<table class="parts"');
   });
