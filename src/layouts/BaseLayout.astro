@@ -6,7 +6,8 @@ import '../styles/global.css';
 interface Props {
   title: string;
   description: string;
-  canonicalPath: string;
+  /** The page's own path; leave it out for a page with no address of its own, such as the 404 page. */
+  canonicalPath?: string;
   showLearning: boolean;
   image?: ImageMetadata;
   type?: 'website' | 'article';
@@ -14,7 +15,7 @@ interface Props {
 
 const { title, description, canonicalPath, showLearning, image, type = 'website' } = Astro.props;
 const site = import.meta.env.SITE;
-const canonical = new URL(canonicalPath, site);
+const canonical = canonicalPath === undefined ? undefined : new URL(canonicalPath, site);
 const ogImage = image ? new URL((await getImage({ src: image, width: 1200 })).src, site) : undefined;
 const pageTitle = canonicalPath === '/' ? title : `${title} · PrinceTronics`;
 ---
@@ -26,11 +27,11 @@ const pageTitle = canonicalPath === '/' ? title : `${title} · PrinceTronics`;
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{pageTitle}</title>
     <meta name="description" content={description} />
-    <link rel="canonical" href={canonical} />
+    {canonical && <link rel="canonical" href={canonical} />}
     <link rel="alternate" type="application/rss+xml" title="PrinceTronics" href="/rss.xml" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
-    <meta property="og:url" content={canonical} />
+    {canonical && <meta property="og:url" content={canonical} />}
     <meta property="og:type" content={type} />
     <meta property="og:site_name" content="PrinceTronics" />
     {ogImage && <meta property="og:image" content={ogImage} />}
