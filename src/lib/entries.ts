@@ -7,15 +7,6 @@ export function entryUrl(section: Section, id: string): string {
   return `/${section}/${id}/`;
 }
 
-/** The URL key of a tag, the same for every spelling that differs only in case, spacing or punctuation. */
-export function tagSlug(tag: string): string {
-  return tag
-    .trim()
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '');
-}
-
 /** Whether an entry belongs on the site: drafts show in `astro dev` and never in a production build. */
 export function isPublished(entry: { data: { draft: boolean } }, isProduction: boolean): boolean {
   return !isProduction || !entry.data.draft;

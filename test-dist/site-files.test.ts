@@ -60,6 +60,18 @@ describe('standalone pages', () => {
   });
 });
 
+describe('client-side JavaScript', () => {
+  it('is only the copy button: one inline script per page and no islands', () => {
+    for (const path of htmlFiles) {
+      const html = read(path);
+
+      expect(html.match(/<script/g) ?? [], path).toHaveLength(1);
+      expect(html, path).toContain('navigator.clipboard');
+      expect(html, path).not.toContain('<astro-island');
+    }
+  });
+});
+
 describe('URL shape', () => {
   it('writes every page as <folder>/index.html', () => {
     expect(htmlFiles.filter((path) => path !== '404.html' && !path.endsWith('/index.html') && path !== 'index.html')).toEqual([]);

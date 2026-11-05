@@ -3,7 +3,7 @@ title: A line-following robot
 summary: Not finished yet.
 publishDate: 2026-04-01
 draft: true
-tags: [Robots]
+tags: [Robots, Arduino]
 cover: ./draft-robot/cover.jpg
 coverAlt: A half-built robot chassis
 why: To try a new motor driver.

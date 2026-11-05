@@ -1,4 +1,16 @@
-import { tagSlug } from './entries';
+/**
+ * The URL key of a tag, the same for every spelling that differs only in case, spacing or punctuation, except `+`
+ * and `#`, which are spelled out so that C, C++ and C# stay apart. Empty for a tag with no ASCII letter or digit.
+ */
+export function tagSlug(tag: string): string {
+  return tag
+    .trim()
+    .toLowerCase()
+    .replaceAll('+', '-plus-')
+    .replaceAll('#', '-sharp-')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
 
 /** Every tag on the given entries, keyed by `tagSlug`, labelled with the first spelling seen. */
 export function collectTags(entries: { data: { tags: string[] } }[]): Map<string, { label: string; count: number }> {

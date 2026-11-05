@@ -1,9 +1,9 @@
 ---
 import EntryList from '../../components/EntryList.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { allPublishedEntries, tagSlug } from '../../lib/entries';
+import { allPublishedEntries } from '../../lib/entries';
 import { hasLearningEntries } from '../../lib/navigation';
-import { collectTags } from '../../lib/tags';
+import { collectTags, tagSlug } from '../../lib/tags';
 
 export async function getStaticPaths() {
   const entries = await allPublishedEntries();

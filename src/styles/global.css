@@ -120,6 +120,10 @@ td {
   }
 }
 
+.on-this-page > a {
+  display: block;
+}
+
 .links {
   display: flex;
   flex-wrap: wrap;

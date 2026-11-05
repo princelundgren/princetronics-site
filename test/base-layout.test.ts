@@ -41,4 +41,14 @@ describe('BaseLayout', () => {
     expect(footer).toContain('href="/follow/"');
     expect(footer).toContain('href="/rss.xml"');
   });
+
+  it('leaves out the canonical URL and og:url for a page with no address of its own', async () => {
+    const container = await AstroContainer.create();
+    const notFound = await container.renderToString(BaseLayout, {
+      props: { title: 'Page not found', description: 'This page does not exist.', showLearning: false },
+    });
+
+    expect(notFound).not.toContain('rel="canonical"');
+    expect(notFound).not.toContain('og:url');
+  });
 });

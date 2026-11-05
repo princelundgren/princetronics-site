@@ -1,4 +1,5 @@
 import { z } from 'astro/zod';
+import { tagSlug } from './tags';
 
 /** The `image()` helper Astro passes to a collection schema; tests pass a stand-in. */
 export type ImageField<T extends z.ZodType = z.ZodType> = () => T;
@@ -18,6 +19,10 @@ const guideSchema = z.object({
   tools: z.array(z.string()),
 });
 
+const tagSchema = z.string().refine((tag) => tagSlug(tag) !== '', {
+  error: (issue) => `Tag ${JSON.stringify(issue.input)} needs at least one ASCII letter or digit to make its page URL`,
+});
+
 function entryFields<T extends z.ZodType>(image: ImageField<T>) {
   return {
     title: z.string(),
@@ -25,7 +30,7 @@ function entryFields<T extends z.ZodType>(image: ImageField<T>) {
     publishDate: z.coerce.date(),
     updatedDate: z.coerce.date().optional(),
     draft: z.boolean().default(false),
-    tags: z.array(z.string()).default([]),
+    tags: z.array(tagSchema).default([]),
     cover: image(),
     coverAlt: z.string(),
     why: z.string(),
@@ -40,7 +45,7 @@ export function makeProjectSchema<T extends z.ZodType>(image: ImageField<T>) {
   return z.object({
     ...entryFields(image),
     area: z.enum(['maker', 'software']),
-    repoUrl: z.url().optional(),
+    repoUrl: z.httpUrl().optional(),
     guide: guideSchema.optional(),
   });
 }
@@ -54,7 +59,7 @@ export function makeArticleSchema<T extends z.ZodType>(image: ImageField<T>) {
 export const learningSchema = z.object({
   id: z.string(),
   title: z.string(),
-  url: z.url(),
+  url: z.httpUrl(),
   type: z.enum(['guide', 'open-source', 'course']),
   topic: z.string(),
   why: z.string(),
