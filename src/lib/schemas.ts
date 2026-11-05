@@ -45,7 +45,7 @@ export function makeProjectSchema<T extends z.ZodType>(image: ImageField<T>) {
   return z.object({
     ...entryFields(image),
     area: z.enum(['maker', 'software']),
-    repoUrl: z.url().optional(),
+    repoUrl: z.httpUrl().optional(),
     guide: guideSchema.optional(),
   });
 }
@@ -59,7 +59,7 @@ export function makeArticleSchema<T extends z.ZodType>(image: ImageField<T>) {
 export const learningSchema = z.object({
   id: z.string(),
   title: z.string(),
-  url: z.url(),
+  url: z.httpUrl(),
   type: z.enum(['guide', 'open-source', 'course']),
   topic: z.string(),
   why: z.string(),

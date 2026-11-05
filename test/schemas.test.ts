@@ -1,6 +1,6 @@
 import { z } from 'astro/zod';
 import { describe, expect, it } from 'vitest';
-import { commentFileSchema, makeProjectSchema } from '../src/lib/schemas';
+import { commentFileSchema, learningSchema, makeProjectSchema } from '../src/lib/schemas';
 
 const imageStub = () => z.string();
 const projectSchema = makeProjectSchema(imageStub);
@@ -56,11 +56,26 @@ describe('project schema', () => {
     expect(result.error?.issues[0].message).toContain('"!!!"');
   });
 
+  it('repoUrl takes only a web link', () => {
+    expect(projectSchema.safeParse({ ...showcase, repoUrl: 'https://github.com/example/drone' }).success).toBe(true);
+    expect(projectSchema.safeParse({ ...showcase, repoUrl: 'javascript:alert(1)' }).success).toBe(false);
+    expect(projectSchema.safeParse({ ...showcase, repoUrl: 'data:text/html,hi' }).success).toBe(false);
+  });
+
   it('draft defaults to false and tags to []', () => {
     const parsed = projectSchema.parse(showcase);
 
     expect(parsed.draft).toBe(false);
     expect(parsed.tags).toEqual([]);
+  });
+});
+
+describe('learning schema', () => {
+  const entry = { id: 'mdn', title: 'MDN', url: 'https://developer.mozilla.org/', type: 'guide', topic: 'Web', why: 'Reference.' };
+
+  it('url takes only a web link', () => {
+    expect(learningSchema.safeParse(entry).success).toBe(true);
+    expect(learningSchema.safeParse({ ...entry, url: 'javascript:alert(1)' }).success).toBe(false);
   });
 });
 
