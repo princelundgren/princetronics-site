@@ -23,7 +23,7 @@ describe('section pages', () => {
 });
 
 describe('tag pages', () => {
-  it('builds one page for a tag spelled two ways, listing both entries', () => {
+  it('builds one page for a tag spelled two ways, listing its published entries only', () => {
     expect(readdirSync('dist/tags').filter((tag) => tag.toLowerCase() === 'arduino')).toEqual(['arduino']);
     expect(linkedEntries(page('tags/arduino/index.html'))).toEqual(['fpv-drone', 'read-433mhz-codes']);
   });

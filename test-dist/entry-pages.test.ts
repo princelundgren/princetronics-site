@@ -22,6 +22,13 @@ describe('project and article pages', () => {
     expect(page('projects/fpv-drone/index.html')).not.toContain('Earlier discussion');
   });
 
+  it('links a project to its source code and its related articles', () => {
+    const links = page('projects/fpv-drone/index.html').match(/<p class="links">[\s\S]*?<\/p>/)?.[0] ?? '';
+
+    expect(links).toContain('href="https://github.com/example/fpv-drone-config"');
+    expect(links).toContain('href="/articles/pin-your-ci-actions/"');
+  });
+
   it('renders a showcase project without a parts table', () => {
     expect(page('projects/fpv-drone/index.html')).not.toContain('<table class="parts"');
   });
