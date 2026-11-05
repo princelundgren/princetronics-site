@@ -1,0 +1,16 @@
+---
+import { render } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { hasLearningEntries } from '../lib/navigation';
+import { requirePage } from '../lib/pages';
+
+const page = await requirePage('follow');
+const { Content } = await render(page);
+const feedUrl = new URL('/rss.xml', import.meta.env.SITE).href;
+---
+
+<BaseLayout title={page.data.title} description={page.data.summary} canonicalPath="/follow/" showLearning={await hasLearningEntries()}>
+  <h1>{page.data.title}</h1>
+  <Content />
+  <p>Feed address: <a href="/rss.xml"><code>{feedUrl}</code></a></p>
+</BaseLayout>
