@@ -171,9 +171,10 @@ and articles together. Learning appears in the navigation once it has entries *(
 - **AWS access from CI** uses GitHub OIDC with two roles, both trusting only the content repo:
   - **Deploy role:** write and delete in the site bucket, nothing else.
   - **Infrastructure role:** separate, for infrastructure changes, used by a manually started workflow.
-  - **Trust conditions:** `aud` = `sts.amazonaws.com`, and `sub` pinned to a GitHub environment (`production`,
-    deployable from `main` only). The content repo is new, so its `sub` uses GitHub's immutable form with owner and
-    repository IDs (`repo:<owner>@<id>/<repo>@<id>:environment:production`); match that form exactly.
+  - **Trust conditions:** `aud` = `sts.amazonaws.com`, and `sub` pinned to the `main` branch. GitHub Free gives a
+    private repository no environments, and the maintainer keeps the Free plan (maintainer, 2026-11-06). The content
+    repo is new, so its `sub` uses GitHub's immutable form with owner and repository IDs
+    (`repo:<owner>@<id>/<repo>@<id>:ref:refs/heads/main`); match that form exactly.
 - **Local preview** is the main review step: `astro dev` against the content checkout, with drafts visible locally and
   never built for production. A separate dev environment is optional and not needed for launch. If one is added later,
   it needs its own distribution and function, its own pricing plan or pay-as-you-go, and `noindex`.
