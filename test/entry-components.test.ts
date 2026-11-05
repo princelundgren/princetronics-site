@@ -39,22 +39,35 @@ describe('GuideAtAGlance', () => {
 });
 
 describe('OnThisPage', () => {
-  it("lists What you'll need, then each step heading as an anchor link", async () => {
-    const html = await container.renderToString(OnThisPage, {
-      props: {
-        headings: [
-          { depth: 2, slug: 'wire-the-receiver', text: 'Wire the receiver' },
-          { depth: 3, slug: 'a-detail', text: 'A detail' },
-          { depth: 2, slug: 'troubleshooting', text: 'Troubleshooting' },
-        ],
-      },
-    });
-    const links = [...html.matchAll(/<a href="([^"]+)"[^>]*>([^<]+)<\/a>/g)].map(([, href, text]) => [href, text]);
+  const headings = [
+    { depth: 2, slug: 'wire-the-receiver', text: 'Wire the receiver' },
+    { depth: 3, slug: 'a-detail', text: 'A detail' },
+    { depth: 2, slug: 'read-the-codes', text: 'Read the codes' },
+    { depth: 2, slug: 'troubleshooting', text: 'Troubleshooting' },
+    { depth: 2, slug: 'downloads', text: 'Downloads' },
+  ];
+  const linksIn = (html: string) =>
+    [...html.matchAll(/<a href="([^"]+)"[^>]*>([^<]+)<\/a>/g)].map(([, href, text]) => [href, text]);
 
-    expect(links).toEqual([
+  it("lists What you'll need, then each section heading as an anchor link", async () => {
+    const html = await container.renderToString(OnThisPage, { props: { headings } });
+
+    expect(linksIn(html)).toEqual([
       ['#what-youll-need', 'What you’ll need'],
       ['#wire-the-receiver', 'Wire the receiver'],
+      ['#read-the-codes', 'Read the codes'],
       ['#troubleshooting', 'Troubleshooting'],
+      ['#downloads', 'Downloads'],
+    ]);
+  });
+
+  it('numbers only the steps', async () => {
+    const html = await container.renderToString(OnThisPage, { props: { headings } });
+    const numbered = html.match(/<ol[\s\S]*?<\/ol>/)?.[0] ?? '';
+
+    expect(linksIn(numbered)).toEqual([
+      ['#wire-the-receiver', 'Wire the receiver'],
+      ['#read-the-codes', 'Read the codes'],
     ]);
   });
 });
