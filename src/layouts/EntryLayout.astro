@@ -29,7 +29,8 @@ const pageUrl = new URL(path, import.meta.env.SITE).href;
 
 const relatedArticles = project
   ? (await Promise.all(project.relatedArticles.map((ref) => getEntry(ref)))).filter(
-      (article) => article !== undefined && isPublished(article, import.meta.env.PROD),
+      (article): article is CollectionEntry<'articles'> =>
+        article !== undefined && isPublished(article, import.meta.env.PROD),
     )
   : [];
 const hasLinks = project !== undefined && (project.repoUrl !== undefined || relatedArticles.length > 0);
@@ -83,7 +84,7 @@ const hasLinks = project !== undefined && (project.repoUrl !== undefined || rela
         <p class="links">
           <strong>Links:</strong>
           {project?.repoUrl && <a href={project.repoUrl}>Source code</a>}
-          {relatedArticles.map((article) => article && <a href={entryUrl('articles', article.id)}>{article.data.title}</a>)}
+          {relatedArticles.map((article) => <a href={entryUrl('articles', article.id)}>{article.data.title}</a>)}
         </p>
       )
     }
