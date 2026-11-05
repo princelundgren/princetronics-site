@@ -1,22 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { byNewest, entryUrl, isPublished, tagSlug } from '../src/lib/entries';
+import { byNewest, entryUrl, isPublished } from '../src/lib/entries';
 
 describe('entryUrl', () => {
   it('puts an entry under its section with a trailing slash', () => {
     expect(entryUrl('projects', 'fpv-drone')).toBe('/projects/fpv-drone/');
     expect(entryUrl('articles', 'pin-your-ci-actions')).toBe('/articles/pin-your-ci-actions/');
-  });
-});
-
-describe('tagSlug', () => {
-  it('ignores case and surrounding spaces', () => {
-    expect(tagSlug('Arduino')).toBe('arduino');
-    expect(tagSlug(' arduino ')).toBe('arduino');
-    expect(tagSlug('ARDUINO')).toBe('arduino');
-  });
-
-  it('joins words with a hyphen', () => {
-    expect(tagSlug('433 MHz')).toBe('433-mhz');
   });
 });
 

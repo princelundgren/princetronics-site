@@ -1,4 +1,11 @@
-import { tagSlug } from './entries';
+/** The URL key of a tag, the same for every spelling that differs only in case, spacing or punctuation. */
+export function tagSlug(tag: string): string {
+  return tag
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
 
 /** Every tag on the given entries, keyed by `tagSlug`, labelled with the first spelling seen. */
 export function collectTags(entries: { data: { tags: string[] } }[]): Map<string, { label: string; count: number }> {

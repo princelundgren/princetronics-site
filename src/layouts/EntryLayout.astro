@@ -7,9 +7,10 @@ import OnThisPage from '../components/OnThisPage.astro';
 import PartsTable from '../components/PartsTable.astro';
 import WhyHowResult from '../components/WhyHowResult.astro';
 import { monthYear } from '../lib/dates';
-import { entryUrl, isPublished, type Section, tagSlug } from '../lib/entries';
+import { entryUrl, isPublished, type Section } from '../lib/entries';
 import { suggestFixUrl } from '../lib/fix-link';
 import { hasLearningEntries } from '../lib/navigation';
+import { tagSlug } from '../lib/tags';
 import BaseLayout from './BaseLayout.astro';
 
 interface Props {
