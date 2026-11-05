@@ -1,11 +1,12 @@
 ---
 status: building
-verified: 2026-11-05
+verified: 2026-11-06
 governs:
   - src/**
   - astro.config.mjs
   - fixtures/**
   - .github/**
+  - edge/**
 ---
 
 # PrinceTronics rebuild: design
