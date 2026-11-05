@@ -1,7 +1,11 @@
 ---
-status: approved
+status: building
 verified: 2026-11-05
-governs: []
+governs:
+  - src/**
+  - astro.config.mjs
+  - fixtures/**
+  - .github/**
 ---
 
 # PrinceTronics rebuild: design
