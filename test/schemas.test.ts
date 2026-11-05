@@ -49,6 +49,13 @@ describe('project schema', () => {
     expect(projectSchema.safeParse({ ...showcase, area: 'hardware' }).success).toBe(false);
   });
 
+  it('a tag needs a letter or digit, and the error names it', () => {
+    const result = projectSchema.safeParse({ ...showcase, tags: ['Arduino', '!!!'] });
+
+    expect(result.success).toBe(false);
+    expect(result.error?.issues[0].message).toContain('"!!!"');
+  });
+
   it('draft defaults to false and tags to []', () => {
     const parsed = projectSchema.parse(showcase);
 

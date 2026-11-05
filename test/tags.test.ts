@@ -24,4 +24,10 @@ describe('tagSlug', () => {
   it('joins words with a hyphen', () => {
     expect(tagSlug('433 MHz')).toBe('433-mhz');
   });
+
+  it('keeps C, C++ and C# apart', () => {
+    expect(tagSlug('C')).toBe('c');
+    expect(tagSlug('C++')).toBe('c-plus-plus');
+    expect(tagSlug('C#')).toBe('c-sharp');
+  });
 });

@@ -115,7 +115,8 @@ and articles together. Learning appears in the navigation once it has entries *(
   - `/<old-slug>/` and **any path under it** (feed, embed, comment pages) → the post's new URL.
   - `/feed/` and its variants → `/rss.xml`.
   - Comments feeds → 410.
-  - `/category/<x>/` and `/tag/<x>/` → `/tags/<x>/` when that tag exists, otherwise `/`.
+  - `/category/<x>/` and `/tag/<x>/` → the tag page of the category or tag with that name, otherwise `/`. The match
+    goes by name: WordPress drops `+` and `#` from slugs, and the new tag URLs spell them out.
   - `/?p=<id>`, `/?page_id=<id>` and `/?attachment_id=<id>` → the new URL of that post, page or its post.
   - `/wp-sitemap*.xml` → Astro's sitemap index.
   - WordPress internals → 410.
