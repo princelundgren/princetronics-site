@@ -31,6 +31,9 @@ CONTENT_DIR=../path/to/content npm run dev
 - `npm run check`: `astro check`
 - `npx vitest run test/<file>.test.ts`: one test file
 
+Stop `astro dev` (`npx astro dev stop`) before a build: both write the content cache in `node_modules/.astro`, and a
+build against another content folder leaves the running dev server failing to render entries.
+
 ## Conventions
 
 - Lists of entries go through `publishedEntries()` in `src/lib/entries.ts`, never `getCollection` directly, so drafts

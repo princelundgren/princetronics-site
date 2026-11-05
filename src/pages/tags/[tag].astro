@@ -1,0 +1,28 @@
+---
+import EntryList from '../../components/EntryList.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { allPublishedEntries, tagSlug } from '../../lib/entries';
+import { hasLearningEntries } from '../../lib/navigation';
+import { collectTags } from '../../lib/tags';
+
+export async function getStaticPaths() {
+  const entries = await allPublishedEntries();
+  return [...collectTags(entries)].map(([tag, { label }]) => ({
+    params: { tag },
+    props: { label, entries: entries.filter((entry) => entry.data.tags.some((entryTag) => tagSlug(entryTag) === tag)) },
+  }));
+}
+
+const { tag } = Astro.params;
+const { label, entries } = Astro.props;
+---
+
+<BaseLayout
+  title={`Tagged ${label}`}
+  description={`Projects and articles tagged ${label}.`}
+  canonicalPath={`/tags/${tag}/`}
+  showLearning={await hasLearningEntries()}
+>
+  <h1>Tagged “{label}”</h1>
+  <EntryList entries={entries} />
+</BaseLayout>

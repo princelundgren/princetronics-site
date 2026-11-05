@@ -1,0 +1,17 @@
+---
+import type { MarkdownHeading } from 'astro';
+
+interface Props {
+  headings: MarkdownHeading[];
+}
+
+const steps = Astro.props.headings.filter((heading) => heading.depth === 2);
+---
+
+<nav class="on-this-page" aria-label="On this page">
+  <p class="muted">On this page</p>
+  <ol>
+    <li><a href="#what-youll-need">What you’ll need</a></li>
+    {steps.map((step) => <li><a href={`#${step.slug}`}>{step.text}</a></li>)}
+  </ol>
+</nav>

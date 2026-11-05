@@ -1,0 +1,18 @@
+[
+  {
+    "id": "arduino-getting-started",
+    "title": "Getting started with Arduino",
+    "url": "https://docs.arduino.cc/learn/starting-guide/getting-started-arduino/",
+    "type": "guide",
+    "topic": "Electronics",
+    "why": "The clearest first steps with a board and the IDE."
+  },
+  {
+    "id": "astro",
+    "title": "Astro",
+    "url": "https://github.com/withastro/astro",
+    "type": "open-source",
+    "topic": "Web",
+    "why": "Static sites with typed content, which this site is built on."
+  }
+]

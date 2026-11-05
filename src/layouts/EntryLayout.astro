@@ -1,0 +1,93 @@
+---
+import type { MarkdownHeading } from 'astro';
+import { Image } from 'astro:assets';
+import { type CollectionEntry, getEntry } from 'astro:content';
+import GuideAtAGlance from '../components/GuideAtAGlance.astro';
+import OnThisPage from '../components/OnThisPage.astro';
+import PartsTable from '../components/PartsTable.astro';
+import WhyHowResult from '../components/WhyHowResult.astro';
+import { monthYear } from '../lib/dates';
+import { entryUrl, isPublished, type Section, tagSlug } from '../lib/entries';
+import { suggestFixUrl } from '../lib/fix-link';
+import { hasLearningEntries } from '../lib/navigation';
+import BaseLayout from './BaseLayout.astro';
+
+interface Props {
+  entry: CollectionEntry<Section>;
+  section: Section;
+  headings: MarkdownHeading[];
+}
+
+const { entry, section, headings } = Astro.props;
+const { data } = entry;
+const project = entry.collection === 'projects' ? entry.data : undefined;
+const guide = project?.guide;
+const sectionName = section === 'projects' ? 'Projects' : 'Articles';
+const path = entryUrl(section, entry.id);
+const pageUrl = new URL(path, import.meta.env.SITE).href;
+
+const relatedArticles = project
+  ? (await Promise.all(project.relatedArticles.map((ref) => getEntry(ref)))).filter(
+      (article) => article !== undefined && isPublished(article, import.meta.env.PROD),
+    )
+  : [];
+const hasLinks = project !== undefined && (project.repoUrl !== undefined || relatedArticles.length > 0);
+---
+
+<BaseLayout
+  title={data.title}
+  description={data.summary}
+  image={data.cover}
+  canonicalPath={path}
+  type="article"
+  showLearning={await hasLearningEntries()}
+>
+  <article class="entry">
+    <p><a href={`/${section}/`}>← {sectionName}</a></p>
+    <h1>{data.title}</h1>
+    <p class="summary">{data.summary}</p>
+    <p class="meta muted">
+      {project && <span class="area">{project.area === 'maker' ? 'Maker' : 'Software'}</span>}
+      {data.tags.map((tag) => <a class="tag" href={`/tags/${tagSlug(tag)}/`}>{tag}</a>)}
+      <span class="date"
+        ><time datetime={data.publishDate.toISOString()}>{monthYear(data.publishDate)}</time>{
+          data.updatedDate && `, updated ${data.updatedDate.getUTCFullYear()}`
+        }</span
+      >
+    </p>
+    <Image src={data.cover} alt={data.coverAlt} width={1200} class="cover" />
+    {guide && <GuideAtAGlance difficulty={guide.difficulty} time={guide.time} cost={guide.cost} />}
+    <WhyHowResult why={data.why} how={data.how} result={data.result} />
+
+    {
+      guide ? (
+        <div class="guide-body">
+          <OnThisPage headings={headings} />
+          <div class="guide-content">
+            <h2 id="what-youll-need">What you’ll need</h2>
+            <PartsTable parts={guide.parts} />
+            {guide.tools.length > 0 && <p><strong>Tools:</strong> {guide.tools.join(', ')}</p>}
+            <slot />
+          </div>
+        </div>
+      ) : (
+        <div class="entry-content">
+          <slot />
+        </div>
+      )
+    }
+
+    {
+      hasLinks && (
+        <p class="links">
+          <strong>Links:</strong>
+          {project?.repoUrl && <a href={project.repoUrl}>Source code</a>}
+          {relatedArticles.map((article) => article && <a href={entryUrl('articles', article.id)}>{article.data.title}</a>)}
+        </p>
+      )
+    }
+
+    <p class="suggest-fix"><a href={suggestFixUrl(pageUrl, data.title)}>Suggest a fix</a></p>
+    <slot name="discussion" />
+  </article>
+</BaseLayout>

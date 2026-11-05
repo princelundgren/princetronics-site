@@ -1,0 +1,24 @@
+---
+import { Image } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+import { monthYear } from '../lib/dates';
+import { entryUrl, type Section } from '../lib/entries';
+
+interface Props {
+  entry: CollectionEntry<Section>;
+}
+
+const { entry } = Astro.props;
+const section = entry.collection;
+---
+
+<article class="entry-card">
+  <Image src={entry.data.cover} alt={entry.data.coverAlt} width={480} />
+  <div>
+    <h2><a href={entryUrl(section, entry.id)}>{entry.data.title}</a></h2>
+    <p>{entry.data.summary}</p>
+    <p class="muted">
+      {section === 'projects' ? 'Project' : 'Article'} · <time datetime={entry.data.publishDate.toISOString()}>{monthYear(entry.data.publishDate)}</time>
+    </p>
+  </div>
+</article>

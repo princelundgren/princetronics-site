@@ -1,0 +1,27 @@
+---
+import type { Guide } from '../lib/schemas';
+
+interface Props {
+  parts: Guide['parts'];
+}
+
+const { parts } = Astro.props;
+---
+
+<table class="parts">
+  <thead>
+    <tr><th>Part</th><th>Qty</th><th>Approx. price</th><th>Where to buy</th></tr>
+  </thead>
+  <tbody>
+    {
+      parts.map((part) => (
+        <tr>
+          <td>{part.name}</td>
+          <td>{part.quantity}</td>
+          <td>{part.price ?? '—'}</td>
+          <td>{part.whereToBuy}</td>
+        </tr>
+      ))
+    }
+  </tbody>
+</table>

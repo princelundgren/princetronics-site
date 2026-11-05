@@ -1,0 +1,58 @@
+---
+import { getImage } from 'astro:assets';
+import CopyCodeButton from '../components/CopyCodeButton.astro';
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description: string;
+  canonicalPath: string;
+  showLearning: boolean;
+  image?: ImageMetadata;
+  type?: 'website' | 'article';
+}
+
+const { title, description, canonicalPath, showLearning, image, type = 'website' } = Astro.props;
+const site = import.meta.env.SITE;
+const canonical = new URL(canonicalPath, site);
+const ogImage = image ? new URL((await getImage({ src: image, width: 1200 })).src, site) : undefined;
+const pageTitle = canonicalPath === '/' ? title : `${title} · PrinceTronics`;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="alternate" type="application/rss+xml" title="PrinceTronics" href="/rss.xml" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:type" content={type} />
+    <meta property="og:site_name" content="PrinceTronics" />
+    {ogImage && <meta property="og:image" content={ogImage} />}
+    <meta name="twitter:card" content="summary_large_image" />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="/">PrinceTronics</a>
+      <nav aria-label="Main">
+        <a href="/projects/">Projects</a>
+        <a href="/articles/">Articles</a>
+        {showLearning && <a href="/learning/">Learning</a>}
+        <a href="/about/">About</a>
+      </nav>
+    </header>
+    <main>
+      <slot />
+    </main>
+    <footer class="site-footer">
+      <a href="/follow/">Follow</a>
+      <a href="/rss.xml">RSS</a>
+    </footer>
+    <CopyCodeButton />
+  </body>
+</html>

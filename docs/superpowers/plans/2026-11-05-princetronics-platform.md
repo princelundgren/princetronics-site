@@ -38,6 +38,9 @@ Plans 2 and 3 produce and consume this layout; it is the interface between the t
   public/                        served from the site root as-is (wp-content/uploads/..., favicon)
 ```
 
+A comment's `text` is plain text with HTML entities decoded: a blank line separates paragraphs, a single newline is a
+line break, and a line starting with ```` ``` ```` opens or closes a code block. Any markup in it is shown as text.
+
 ## Review Focus
 
 - Comment text containing `<script>`, `<a href>` or other markup: shown as literal text, never as markup (Task 5).

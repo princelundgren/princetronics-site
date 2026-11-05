@@ -1,0 +1,21 @@
+---
+import { render } from 'astro:content';
+import EarlierDiscussion from '../../components/EarlierDiscussion.astro';
+import EntryLayout from '../../layouts/EntryLayout.astro';
+import { publishedEntries } from '../../lib/entries';
+import { oldCommentsFor } from '../../lib/old-comments';
+
+export async function getStaticPaths() {
+  const articles = await publishedEntries('articles');
+  return articles.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+}
+
+const { entry } = Astro.props;
+const { Content, headings } = await render(entry);
+const oldComments = await oldCommentsFor('articles', entry.id);
+---
+
+<EntryLayout entry={entry} section="articles" headings={headings}>
+  <Content />
+  <EarlierDiscussion slot="discussion" comments={oldComments} />
+</EntryLayout>

@@ -1,0 +1,32 @@
+---
+import { type ThreadNode, textToBlocks } from '../lib/comments';
+import { monthYear } from '../lib/dates';
+
+interface Props {
+  nodes: ThreadNode[];
+}
+
+const { nodes } = Astro.props;
+---
+
+<ol class="comment-thread">
+  {
+    nodes.map(({ comment, replies }) => (
+      <li>
+        <article id={`comment-${comment.id}`} class="comment">
+          <p class="muted">
+            <strong>{comment.author}</strong> · <time datetime={comment.date.toISOString()}>{monthYear(comment.date)}</time>
+          </p>
+          {textToBlocks(comment.text).map((block) =>
+            block.kind === 'code' ? (
+              <pre><code>{block.text}</code></pre>
+            ) : (
+              <p>{block.text.split('\n').map((line, index) => (index === 0 ? line : [<br />, line]))}</p>
+            ),
+          )}
+        </article>
+        {replies.length > 0 && <Astro.self nodes={replies} />}
+      </li>
+    ))
+  }
+</ol>
