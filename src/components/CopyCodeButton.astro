@@ -1,0 +1,14 @@
+<script>
+  for (const block of document.querySelectorAll('pre')) {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'copy-code';
+    button.textContent = 'Copy';
+    button.addEventListener('click', async () => {
+      await navigator.clipboard.writeText(block.querySelector('code')?.innerText ?? block.innerText);
+      button.textContent = 'Copied';
+      setTimeout(() => (button.textContent = 'Copy'), 1500);
+    });
+    block.append(button);
+  }
+</script>
