@@ -155,7 +155,7 @@ and articles together. Learning appears in the navigation once it has entries *(
   - The infrastructure code, the URL-check tool and the "Content fix" issue template.
   - It contains no account IDs, secrets, content, redirect data or DNS details.
 - **Content repo (private):** Markdown and MDX, images and uploads, the learning list, the stripped comments, site
-  config, the operational notes (DNS records, registrar, AWS account), and the deploy workflow.
+  config, the operational notes (DNS records, registrar, AWS accounts), and the deploy workflow.
   - **CI**, in two jobs:
     1. **Build job, with no AWS access:** check out the platform at a pinned commit SHA with its lockfile, build, run
        the schema check and the URL check against the build, and upload the output as an artifact.
@@ -180,11 +180,9 @@ and articles together. Learning appears in the navigation once it has entries *(
 
 ## Hosting and cut-over
 
-- **Accounts** (names and IDs in the operational notes):
-  - the site's stacks (bucket, distribution, function, certificate, web ACL, plan subscription, deploy roles) in a
-    **workload account**;
-  - the `princetronics.com` hosted zone and the domain registration in a separate **DNS account**. The site's stacks
-    write their records there through a narrow cross-account DNS-writer role.
+- **Accounts:** the site's stacks (bucket, distribution, function, certificate, web ACL, plan subscription, deploy
+  roles) live in a **workload account**. Where the hosted zone and the registration live is in the operational notes;
+  the infrastructure code takes the hosted zone's account and ID as deploy inputs.
   - The certificate and the web ACL must be in us-east-1, so the edge stack lives there.
 - **Delivery:**
   - A private S3 bucket behind one CloudFront distribution with origin access control.
@@ -210,34 +208,21 @@ and articles together. Learning appears in the navigation once it has entries *(
   - It has no KeyValueStore, and Lambda@Edge is billed separately, so nothing uses either.
   - Its allowance is 1 M requests and 100 GB a month. Going over is never billed; sustained excess over months may
     slow delivery, far above this site's traffic.
-  - It covers a hosted zone only in the same account as the distribution, so the zone in the DNS account stays on
-    normal Route 53 pricing.
+  - It covers the hosted zone only once the zone is attached to the plan, is in the same account as the distribution,
+    covers its domain and stays within the tier's record limit; otherwise Route 53 bills as pay-as-you-go.
   - S3 storage is offset by the plan's 5 GB S3 credit.
   - Logs: none at launch, and the function never logs (function logs are billed outside the plan). Standard logs to
     S3 can be added later, billed as S3 storage.
-  - An AWS Budgets alert covers both accounts.
+  - An AWS Budgets alert covers every account the site uses.
 
   Pay-as-you-go is the fallback, also near zero for this site, but with no protection against a spike's bill.
-- **DNS** moves to Route 53. Copy every record from the current DNS host's panel first; DNS can't list every record.
-  The unused mail records are dropped. The domain is DNSSEC-signed today, so signing is turned off before the move and
-  turned back on in Route 53 after it *(my call)*. The registrar, the records, the account and the signing key live in
-  the content repo's operational notes.
+- **DNS** moves to Route 53, and the registration to Amazon Registrar. The records, the current registrar, the accounts
+  and the cut-over steps with their dates live in the content repo's operational notes.
 - **Cut-over:**
-  1. At the current registrar, check that the transfer lock can be lifted and an authorization code obtained, that the
-     registrant email is current (Route 53 may email it), and that nothing will start a transfer lock (changing the
-     registrant contact can lock transfers for 60 days).
-  2. Turn DNSSEC off at the current host, confirm the DS record is gone from `.com`, then wait twice the TTL `.com` gave it.
-  3. Create the Route 53 zone with every record copied over, and the certificate's validation records in both the
-     current host and the new zone (renewal needs them to stay resolvable).
-  4. Deploy production, and run the URL check against it with the hostnames pinned (`curl --connect-to`).
-  5. Point the domain's nameservers at Route 53, at the current registrar. The change spreads as the delegation TTL
-     `.com` sets expires; lowering the zone's own TTLs doesn't shorten it.
-  6. Re-run the URL check. Keep WordPress available but unlinked until it passes.
-  7. Transfer the registration to Amazon Registrar in the DNS account, starting by 2026-12-29 *(my call)*, a month
-     before it expires on 2027-01-29. DNSSEC must still be off. The transfer fee is charged upfront and credits can't
-     pay it. Retire the old hosting only once the transfer has completed, so cancelling it cannot take the domain
-     with it.
-  8. Re-enable DNSSEC in Route 53.
+  1. Deploy production, and run the URL check against it with the hostnames pinned (`curl --connect-to`).
+  2. Move DNS and the registration as the operational notes say.
+  3. Re-run the URL check. Keep WordPress available but unlinked until it passes.
+  4. Retire the old hosting only once the registration has moved, so cancelling it cannot take the domain with it.
 
 ## Launch scope
 
