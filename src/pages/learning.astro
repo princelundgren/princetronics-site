@@ -1,0 +1,35 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const typeLabels = { guide: 'Guide', 'open-source': 'Open source', course: 'Course' } as const;
+
+const learning = (await getCollection('learning')).map((entry) => entry.data);
+const topics = [...new Set(learning.map((entry) => entry.topic))].sort((a, b) => a.localeCompare(b));
+---
+
+<BaseLayout
+  title="Learning"
+  description="Guides, open-source projects and courses worth your time."
+  canonicalPath="/learning/"
+  showLearning={learning.length > 0}
+>
+  <h1>Learning</h1>
+  {learning.length === 0 && <p>Nothing on the list yet.</p>}
+  {
+    topics.map((topic) => (
+      <section>
+        <h2>{topic}</h2>
+        <ul>
+          {learning
+            .filter((entry) => entry.topic === topic)
+            .map((entry) => (
+              <li>
+                <a href={entry.url}>{entry.title}</a> <span class="muted">({typeLabels[entry.type]})</span>: {entry.why}
+              </li>
+            ))}
+        </ul>
+      </section>
+    ))
+  }
+</BaseLayout>

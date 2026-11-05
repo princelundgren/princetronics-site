@@ -1,0 +1,15 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import type { Section } from '../lib/entries';
+import EntryCard from './EntryCard.astro';
+
+interface Props {
+  entries: CollectionEntry<Section>[];
+}
+
+const { entries } = Astro.props;
+---
+
+<div class="entry-list">
+  {entries.map((entry) => <EntryCard entry={entry} />)}
+</div>

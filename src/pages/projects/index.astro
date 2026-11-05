@@ -1,0 +1,18 @@
+---
+import EntryList from '../../components/EntryList.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { publishedEntries } from '../../lib/entries';
+import { hasLearningEntries } from '../../lib/navigation';
+
+const projects = await publishedEntries('projects');
+---
+
+<BaseLayout
+  title="Projects"
+  description="Maker builds and software projects, many with step-by-step guides."
+  canonicalPath="/projects/"
+  showLearning={await hasLearningEntries()}
+>
+  <h1>Projects</h1>
+  <EntryList entries={projects} />
+</BaseLayout>

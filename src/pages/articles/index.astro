@@ -1,0 +1,18 @@
+---
+import EntryList from '../../components/EntryList.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { publishedEntries } from '../../lib/entries';
+import { hasLearningEntries } from '../../lib/navigation';
+
+const articles = await publishedEntries('articles');
+---
+
+<BaseLayout
+  title="Articles"
+  description="Best practices in software and cloud."
+  canonicalPath="/articles/"
+  showLearning={await hasLearningEntries()}
+>
+  <h1>Articles</h1>
+  <EntryList entries={articles} />
+</BaseLayout>

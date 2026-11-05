@@ -31,3 +31,9 @@ export async function publishedEntries<S extends Section>(section: S): Promise<C
   const entries = await getCollection(section, (entry) => isPublished(entry, import.meta.env.PROD));
   return entries.sort(byNewest);
 }
+
+/** Every published project and article together, newest first: the home page, tag pages and the feed. */
+export async function allPublishedEntries(): Promise<CollectionEntry<Section>[]> {
+  const [projects, articles] = await Promise.all([publishedEntries('projects'), publishedEntries('articles')]);
+  return [...projects, ...articles].sort(byNewest);
+}
