@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
@@ -19,6 +20,20 @@ describe('RSS feed', () => {
 
   it('leaves drafts out', () => {
     expect(read('rss.xml')).not.toContain('draft-robot');
+  });
+});
+
+describe('draft files', () => {
+  it('are not copied into the build, not even unlinked', () => {
+    const digest = (path: string) => createHash('sha256').update(readFileSync(path)).digest('hex');
+    const draftFolder = 'fixtures/content/projects/draft-robot';
+    const draftDigests = readdirSync(draftFolder).map((file) => digest(`${draftFolder}/${file}`));
+    const builtDigests = readdirSync('dist', { recursive: true, withFileTypes: true })
+      .filter((entry) => entry.isFile())
+      .map((entry) => digest(`${entry.parentPath}/${entry.name}`));
+
+    expect(draftDigests).toHaveLength(2);
+    expect(builtDigests.filter((built) => draftDigests.includes(built))).toEqual([]);
   });
 });
 

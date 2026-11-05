@@ -13,3 +13,5 @@ area: maker
 ---
 
 Work in progress.
+
+![The motor driver on a breadboard](./draft-robot/photo.jpg)
