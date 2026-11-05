@@ -1,0 +1,66 @@
+---
+title: Read 433 MHz remote codes with an Arduino
+summary: Decode the codes a cheap wireless remote sends, so an Arduino can copy them.
+publishDate: 2014-06-20
+updatedDate: 2026-02-15
+tags: [Arduino, 433 MHz]
+cover: ./read-433mhz-codes/cover.jpg
+coverAlt: A 433 MHz receiver wired to an Arduino Uno
+why: Wireless wall sockets are cheap, and their remotes are easy to imitate.
+how: A receiver module on a digital pin and a library that decodes the pulses.
+result: The serial monitor prints each button's code, ready to send from a transmitter.
+legacySlug: read-433mhz-codes-with-arduino
+area: maker
+guide:
+  difficulty: beginner
+  time: ~1 hour
+  cost: ~100 SEK
+  parts:
+    - name: Arduino Uno
+      quantity: 1
+      price: ~250 SEK
+      whereToBuy: Any electronics shop
+    - name: 433 MHz receiver module
+      quantity: 1
+      whereToBuy: Online electronics shops
+    - name: Jumper wires
+      quantity: 3
+      whereToBuy: Any electronics shop
+  tools: [USB cable, Computer with the Arduino IDE]
+---
+
+## Wire the receiver
+
+Connect VCC to 5V, GND to GND and DATA to pin 2.
+
+![The wiring](/wp-content/uploads/2014/06/sample.jpg)
+
+## Install the library
+
+Install the RCSwitch library from the Library Manager.
+
+## Read the codes
+
+Upload this sketch and open the serial monitor at 9600 baud:
+
+```cpp
+#include <RCSwitch.h>
+
+RCSwitch receiver = RCSwitch();
+
+void setup() {
+  Serial.begin(9600);
+  receiver.enableReceive(0);
+}
+
+void loop() {
+  if (receiver.available()) {
+    Serial.println(receiver.getReceivedValue());
+    receiver.resetAvailable();
+  }
+}
+```
+
+## Troubleshooting
+
+No codes at all usually means DATA is on the wrong pin.
