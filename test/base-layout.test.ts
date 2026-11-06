@@ -35,11 +35,35 @@ describe('BaseLayout', () => {
     expect(nav).not.toContain('href="/learning/"');
   });
 
-  it('links Follow and RSS in the footer', () => {
+  it('links Follow, RSS and About in the footer, under the site name', () => {
     const footer = html.match(/<footer[\s\S]*?<\/footer>/)?.[0] ?? '';
 
+    expect(footer).toContain('PrinceTronics');
     expect(footer).toContain('href="/follow/"');
     expect(footer).toContain('href="/rss.xml"');
+    expect(footer).toContain('href="/about/"');
+  });
+
+  it('opens the header with the P mark, a home link named PrinceTronics', () => {
+    const header = html.match(/<header[\s\S]*?<\/header>/)?.[0] ?? '';
+    const [, attributes = '', text] = header.match(/<a([^>]*)>([^<]*)<\/a>/) ?? [];
+
+    expect(attributes).toContain('href="/"');
+    expect(attributes).toContain('aria-label="PrinceTronics"');
+    expect(text).toBe('P');
+    expect(header.replace(/<[^>]+>/g, ' ')).not.toContain('PrinceTronics');
+  });
+
+  it('marks the current section in the navigation', async () => {
+    const container = await AstroContainer.create();
+    const projects = await container.renderToString(BaseLayout, {
+      props: { title: 'Projects', description: 'All projects.', canonicalPath: '/projects/', showLearning: false, currentSection: 'projects' },
+    });
+    const nav = projects.match(/<nav[\s\S]*?<\/nav>/)?.[0] ?? '';
+
+    expect(nav).toMatch(/<a[^>]*href="\/projects\/"[^>]*aria-current="true"|<a[^>]*aria-current="true"[^>]*href="\/projects\/"/);
+    expect(nav.match(/aria-current/g)).toHaveLength(1);
+    expect(html).not.toContain('aria-current');
   });
 
   it('leaves out the canonical URL and og:url for a page with no address of its own', async () => {

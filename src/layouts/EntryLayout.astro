@@ -1,13 +1,10 @@
 ---
-import type { MarkdownHeading } from 'astro';
-import { Image } from 'astro:assets';
 import { type CollectionEntry, getEntry } from 'astro:content';
-import GuideAtAGlance from '../components/GuideAtAGlance.astro';
-import OnThisPage from '../components/OnThisPage.astro';
-import PartsTable from '../components/PartsTable.astro';
-import WhyHowResult from '../components/WhyHowResult.astro';
+import EntryDemo from '../components/EntryDemo.astro';
+import PartsList from '../components/PartsList.astro';
 import { monthYear } from '../lib/dates';
 import { isPublished } from '../lib/entries';
+import { splitAtFirstStep } from '../lib/guide-body';
 import { entryUrl, type Section } from '../lib/urls';
 import { suggestFixUrl } from '../lib/fix-link';
 import { hasLearningEntries } from '../lib/navigation';
@@ -17,14 +14,12 @@ import BaseLayout from './BaseLayout.astro';
 interface Props {
   entry: CollectionEntry<Section>;
   section: Section;
-  headings: MarkdownHeading[];
 }
 
-const { entry, section, headings } = Astro.props;
+const { entry, section } = Astro.props;
 const { data } = entry;
 const project = entry.collection === 'projects' ? entry.data : undefined;
 const guide = project?.guide;
-const sectionName = section === 'projects' ? 'Projects' : 'Articles';
 const path = entryUrl(section, entry.id);
 const pageUrl = new URL(path, import.meta.env.SITE).href;
 
@@ -35,6 +30,7 @@ const relatedArticles = project
     )
   : [];
 const hasLinks = project !== undefined && (project.repoUrl !== undefined || relatedArticles.length > 0);
+const guideBody = guide && splitAtFirstStep(await Astro.slots.render('default'));
 ---
 
 <BaseLayout
@@ -44,34 +40,25 @@ const hasLinks = project !== undefined && (project.repoUrl !== undefined || rela
   canonicalPath={path}
   type="article"
   showLearning={await hasLearningEntries()}
+  currentSection={section}
 >
   <article class="entry">
-    <p><a href={`/${section}/`}>← {sectionName}</a></p>
     <h1>{data.title}</h1>
     <p class="summary">{data.summary}</p>
-    <p class="meta muted">
-      {project && <span class="area">{project.area === 'maker' ? 'Maker' : 'Software'}</span>}
-      {data.tags.map((tag) => <a class="tag" href={`/tags/${tagSlug(tag)}/`}>{tag}</a>)}
-      <span class="date"
-        ><time datetime={data.publishDate.toISOString()}>{monthYear(data.publishDate)}</time>{
-          data.updatedDate && `, updated ${data.updatedDate.getUTCFullYear()}`
-        }</span
-      >
+    {project && <EntryDemo cover={project.cover} coverAlt={project.coverAlt} video={project.video} />}
+    <p class="date">
+      <time datetime={data.publishDate.toISOString()}>{monthYear(data.publishDate)}</time>{
+        data.updatedDate && `, updated ${data.updatedDate.getUTCFullYear()}`
+      }
     </p>
-    <Image src={data.cover} alt={data.coverAlt} width={1200} class="cover" />
-    {guide && <GuideAtAGlance difficulty={guide.difficulty} time={guide.time} cost={guide.cost} />}
-    <WhyHowResult why={data.why} how={data.how} result={data.result} />
 
     {
-      guide ? (
-        <div class="guide-body">
-          <OnThisPage headings={headings} />
-          <div class="guide-content">
-            <h2 id="what-youll-need">What you’ll need</h2>
-            <PartsTable parts={guide.parts} />
-            {guide.tools.length > 0 && <p><strong>Tools:</strong> {guide.tools.join(', ')}</p>}
-            <slot />
-          </div>
+      guide && guideBody ? (
+        <div class="entry-content">
+          <Fragment set:html={guideBody.intro} />
+          <h2 id="what-youll-need">What you’ll need</h2>
+          <PartsList parts={guide.parts} tools={guide.tools} />
+          <Fragment set:html={guideBody.steps} />
         </div>
       ) : (
         <div class="entry-content">
@@ -87,6 +74,14 @@ const hasLinks = project !== undefined && (project.repoUrl !== undefined || rela
           {project?.repoUrl && <a href={project.repoUrl}>Source code</a>}
           {relatedArticles.map((article) => <a href={entryUrl('articles', article.id)}>{article.data.title}</a>)}
         </p>
+      )
+    }
+
+    {
+      data.tags.length > 0 && (
+        <div class="tags">
+          {data.tags.map((tag) => <a href={`/tag/${tagSlug(tag)}/`}>{tag}</a>)}
+        </div>
       )
     }
 

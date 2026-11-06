@@ -11,14 +11,11 @@ const showcase = {
   publishDate: '2026-01-10',
   cover: 'cover.jpg',
   coverAlt: 'The drone on a bench',
-  why: 'To learn flight controllers.',
-  how: 'A carbon frame and a Betaflight board.',
-  result: 'It flies.',
   area: 'maker',
 };
 
 const part = { name: 'Arduino Uno', quantity: 1, whereToBuy: 'Any electronics shop' };
-const guide = { difficulty: 'beginner', time: '~1 hour', cost: '~100 SEK', parts: [part], tools: ['Soldering iron'] };
+const guide = { parts: [part], tools: ['Soldering iron'] };
 
 function parseWithGuide(guideOverride: object) {
   return projectSchema.safeParse({ ...showcase, guide: { ...guide, ...guideOverride } });
@@ -27,6 +24,10 @@ function parseWithGuide(guideOverride: object) {
 describe('project schema', () => {
   it('a showcase project needs no guide', () => {
     expect(projectSchema.safeParse(showcase).success).toBe(true);
+  });
+
+  it('a guide needs only its parts and tools', () => {
+    expect(parseWithGuide({}).success).toBe(true);
   });
 
   it('a guide needs at least one part', () => {
@@ -38,10 +39,31 @@ describe('project schema', () => {
     expect(parseWithGuide({ parts: [{ ...part, quantity: 1.5 }] }).success).toBe(false);
   });
 
-  it('price is optional, whereToBuy is not', () => {
-    expect(parseWithGuide({ parts: [part] }).success).toBe(true);
+  it('price and whereToBuy are optional', () => {
     const { whereToBuy: _omitted, ...withoutShop } = part;
-    expect(parseWithGuide({ parts: [withoutShop] }).success).toBe(false);
+    expect(parseWithGuide({ parts: [withoutShop] }).success).toBe(true);
+  });
+
+  it('video takes a YouTube watch URL', () => {
+    expect(projectSchema.safeParse({ ...showcase, video: 'https://www.youtube.com/watch?v=abc123' }).success).toBe(true);
+  });
+
+  it('video rejects other YouTube pages, other hosts and plain http, naming the field', () => {
+    for (const video of [
+      'https://www.youtube.com/playlist?list=x',
+      'https://www.youtube.com/watch',
+      'https://www.youtube.com/@example',
+      'https://www.youtube.com/embed/abc123?v=abc123',
+      'https://vimeo.com/1',
+      'http://www.youtube.com/watch?v=abc123',
+      'https://youtube.com.example.com/watch?v=abc123',
+      'youtube.com/watch?v=abc123',
+      'not a url',
+    ]) {
+      const result = projectSchema.safeParse({ ...showcase, video });
+      expect(result.success, video).toBe(false);
+      expect(result.error?.issues[0].path, video).toEqual(['video']);
+    }
   });
 
   it('area accepts only maker or software', () => {

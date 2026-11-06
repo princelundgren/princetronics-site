@@ -57,7 +57,26 @@ describe('buildFunctionCode', () => {
 
   it('maps a term to the tag page of a published tag with that name', () => {
     const code = buildFunctionCode(fixtures, template);
-    expect(locationOf(code, '/category/arduino/')).toBe('https://www.princetronics.com/tags/arduino/');
+    expect(locationOf(code, '/category/arduino/')).toBe('https://www.princetronics.com/tag/arduino/');
+  });
+
+  it('serves a published tag that WordPress never had', () => {
+    const code = buildFunctionCode(fixtures, template);
+    expect(locationOf(code, '/tag/drones/')).toBeUndefined();
+  });
+
+  it("serves a published tag's page even when WordPress used its slug for another tag", () => {
+    const dir = contentCopy();
+    const article = join(dir, 'articles/pin-your-ci-actions.md');
+    writeFileSync(article, readFileSync(article, 'utf8').replace('tags: [CI, Security]', 'tags: [CI, Security, C, C++]'));
+    editRedirects(dir, (data) => {
+      data.terms['tag/c'] = 'C++';
+    });
+    const code = buildFunctionCode(dir, template);
+
+    expect(locationOf(code, '/tag/c/')).toBeUndefined();
+    expect(locationOf(code, '/tag/c/page/2/')).toBe('https://www.princetronics.com/tag/c/');
+    expect(locationOf(code, '/tag/c-plus-plus/')).toBeUndefined();
   });
 
   it('leaves out a term whose tag only a draft uses', () => {
@@ -74,8 +93,8 @@ describe('buildFunctionCode', () => {
 
   it('fails on a legacy slug that would shadow a section', () => {
     const dir = contentCopy();
-    addFrontMatter(join(dir, 'articles/pin-your-ci-actions.md'), 'legacySlug: tags');
-    expect(() => buildFunctionCode(dir, template)).toThrow(/"tags"/);
+    addFrontMatter(join(dir, 'articles/pin-your-ci-actions.md'), 'legacySlug: tag');
+    expect(() => buildFunctionCode(dir, template)).toThrow(/"tag"/);
   });
 
   it('fails on a path that maps to itself', () => {
@@ -149,8 +168,8 @@ Body
     const code = buildFunctionCode(dir, template);
     expect(Buffer.byteLength(code, 'utf8')).toBeLessThanOrEqual(10_240);
     expect(locationOf(code, '/', { attachment_id: '5062' })).toMatch(/\/projects\/new-post-2-x+\/$/);
-    expect(locationOf(code, `/category/wp-${termNames[0]}/`)).toBe(`https://www.princetronics.com/tags/${termNames[0]}/`);
-    expect(locationOf(code, `/tag/${termNames[1]}/`)).toBe(`https://www.princetronics.com/tags/${termNames[1]}/`);
+    expect(locationOf(code, `/category/wp-${termNames[0]}/`)).toBe(`https://www.princetronics.com/tag/${termNames[0]}/`);
+    expect(locationOf(code, `/tag/${termNames[1]}/`)).toBeUndefined();
   });
 
   it('fails on a post id whose legacy slug no published entry has', () => {

@@ -8,7 +8,7 @@ const page = await requirePage('about');
 const { Content } = await render(page);
 ---
 
-<BaseLayout title={page.data.title} description={page.data.summary} canonicalPath="/about/" showLearning={await hasLearningEntries()}>
+<BaseLayout title={page.data.title} description={page.data.summary} canonicalPath="/about/" showLearning={await hasLearningEntries()} currentSection="about">
   <h1>{page.data.title}</h1>
   <Content />
 </BaseLayout>

@@ -1,8 +1,7 @@
 import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 import { beforeAll, describe, expect, it } from 'vitest';
-import GuideAtAGlance from '../src/components/GuideAtAGlance.astro';
-import OnThisPage from '../src/components/OnThisPage.astro';
-import PartsTable from '../src/components/PartsTable.astro';
+import EntryDemo from '../src/components/EntryDemo.astro';
+import PartsList from '../src/components/PartsList.astro';
 
 let container: AstroContainer;
 
@@ -10,64 +9,66 @@ beforeAll(async () => {
   container = await AstroContainer.create();
 });
 
-describe('PartsTable', () => {
-  it('renders one row per part with its quantity, and a dash for a missing price', async () => {
-    const html = await container.renderToString(PartsTable, {
-      props: {
-        parts: [
-          { name: 'Arduino Uno', quantity: 1, price: '~250 SEK', whereToBuy: 'Any electronics shop' },
-          { name: 'Jumper wires', quantity: 3, whereToBuy: 'Any electronics shop' },
-        ],
-      },
-    });
-    const rows = html.match(/<tbody[\s\S]*?<\/tbody>/)?.[0].match(/<tr/g) ?? [];
+describe('PartsList', () => {
+  const render = (parts: object[], tools: string[] = []) =>
+    container.renderToString(PartsList, { props: { parts, tools } });
 
-    expect(rows).toHaveLength(2);
-    expect(html).toMatch(/<td[^>]*>3<\/td>/);
-    expect(html).toMatch(/<td[^>]*>—<\/td>/);
+  it('renders one item per part with its quantity', async () => {
+    const html = await render([
+      { name: 'Arduino Uno', quantity: 1 },
+      { name: 'Jumper wires', quantity: 3 },
+    ]);
+
+    expect(html.match(/<li/g)).toHaveLength(2);
+    expect(html).toContain('Jumper wires');
+    expect(html).toMatch(/class="qty"[^>]*>3</);
+  });
+
+  it('shows a price when one is given', async () => {
+    expect(await render([{ name: 'Arduino Uno', quantity: 1, price: '~250 SEK' }])).toContain('~250 SEK');
+  });
+
+  it('links an https shop, set apart from the name', async () => {
+    const html = await render([{ name: 'Uno', quantity: 1, whereToBuy: 'https://store.arduino.cc/uno' }]);
+    expect(html).toContain('Uno · <a href="https://store.arduino.cc/uno"');
+  });
+
+  it('shows plain text and a javascript: URL as text, never as a link', async () => {
+    const html = await render([
+      { name: 'Wires', quantity: 1, whereToBuy: 'Any electronics retailer' },
+      { name: 'Trap', quantity: 1, whereToBuy: 'javascript:alert(1)' },
+    ]);
+
+    expect(html).toContain('Any electronics retailer');
+    expect(html).toContain('javascript:alert(1)');
+    expect(html).not.toContain('href');
+  });
+
+  it('lists the tools when there are any', async () => {
+    expect(await render([{ name: 'Uno', quantity: 1 }], ['USB cable', 'A computer'])).toMatch(
+      /Tools:[\s\S]*USB cable, A computer/,
+    );
+    expect(await render([{ name: 'Uno', quantity: 1 }])).not.toContain('Tools:');
   });
 });
 
-describe('GuideAtAGlance', () => {
-  it('shows difficulty, time and cost on one line', async () => {
-    const html = await container.renderToString(GuideAtAGlance, {
-      props: { difficulty: 'beginner', time: '~1 hour', cost: '~100 SEK' },
+describe('EntryDemo', () => {
+  const cover = { src: '/cover.jpg', width: 1200, height: 800, format: 'jpg' as const };
+
+  it('links the cover to the video, loading nothing from YouTube', async () => {
+    const html = await container.renderToString(EntryDemo, {
+      props: { cover, coverAlt: 'The board', video: 'https://www.youtube.com/watch?v=abc123' },
     });
 
-    expect(html).toContain('Beginner · ~1 hour · ~100 SEK');
-  });
-});
-
-describe('OnThisPage', () => {
-  const headings = [
-    { depth: 2, slug: 'wire-the-receiver', text: 'Wire the receiver' },
-    { depth: 3, slug: 'a-detail', text: 'A detail' },
-    { depth: 2, slug: 'read-the-codes', text: 'Read the codes' },
-    { depth: 2, slug: 'troubleshooting', text: 'Troubleshooting' },
-    { depth: 2, slug: 'downloads', text: 'Downloads' },
-  ];
-  const linksIn = (html: string) =>
-    [...html.matchAll(/<a href="([^"]+)"[^>]*>([^<]+)<\/a>/g)].map(([, href, text]) => [href, text]);
-
-  it("lists What you'll need, then each section heading as an anchor link", async () => {
-    const html = await container.renderToString(OnThisPage, { props: { headings } });
-
-    expect(linksIn(html)).toEqual([
-      ['#what-youll-need', 'What you’ll need'],
-      ['#wire-the-receiver', 'Wire the receiver'],
-      ['#read-the-codes', 'Read the codes'],
-      ['#troubleshooting', 'Troubleshooting'],
-      ['#downloads', 'Downloads'],
-    ]);
+    expect(html).toContain('href="https://www.youtube.com/watch?v=abc123"');
+    expect(html).toContain('aria-label="Watch the video on YouTube"');
+    expect(html).not.toContain('<iframe');
   });
 
-  it('numbers only the steps', async () => {
-    const html = await container.renderToString(OnThisPage, { props: { headings } });
-    const numbered = html.match(/<ol[\s\S]*?<\/ol>/)?.[0] ?? '';
+  it('shows the cover alone without a video', async () => {
+    const html = await container.renderToString(EntryDemo, { props: { cover, coverAlt: 'The board' } });
 
-    expect(linksIn(numbered)).toEqual([
-      ['#wire-the-receiver', 'Wire the receiver'],
-      ['#read-the-codes', 'Read the codes'],
-    ]);
+    expect(html).toContain('alt="The board"');
+    expect(html).not.toContain('<a');
   });
 });

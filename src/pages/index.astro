@@ -1,9 +1,12 @@
 ---
+import { getEntry } from 'astro:content';
 import EntryList from '../components/EntryList.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { allPublishedEntries } from '../lib/entries';
 import { hasLearningEntries } from '../lib/navigation';
 
+const about = await getEntry('pages', 'about');
+if (!about) throw new Error('The home page needs pages/about.md: its summary is the line under the site name');
 const entries = await allPublishedEntries();
 ---
 
@@ -13,6 +16,7 @@ const entries = await allPublishedEntries();
   canonicalPath="/"
   showLearning={await hasLearningEntries()}
 >
-  <h1>Projects and articles</h1>
+  <h1>PrinceTronics</h1>
+  <p class="summary">{about.data.summary}</p>
   <EntryList entries={entries} />
 </BaseLayout>

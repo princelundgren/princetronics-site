@@ -11,11 +11,11 @@ export async function getStaticPaths() {
 }
 
 const { entry } = Astro.props;
-const { Content, headings } = await render(entry);
+const { Content } = await render(entry);
 const oldComments = await oldCommentsFor('articles', entry.id);
 ---
 
-<EntryLayout entry={entry} section="articles" headings={headings}>
+<EntryLayout entry={entry} section="articles">
   <Content />
   <EarlierDiscussion slot="discussion" comments={oldComments} />
 </EntryLayout>

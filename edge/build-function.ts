@@ -8,7 +8,7 @@ import { collectTags, tagSlug } from '../src/lib/tags';
 import { entryUrl, type Section } from '../src/lib/urls';
 
 const MAX_BYTES = 10_240;
-const RESERVED_SLUGS = ['projects', 'articles', 'tags', 'learning', 'about', 'follow', 'rss.xml', 'wp-content', '_astro'];
+const RESERVED_SLUGS = ['projects', 'articles', 'tag', 'learning', 'about', 'follow', 'rss.xml', 'wp-content', '_astro'];
 /** Reserved slugs that are single pages: the site builds nothing under them, so a path below one may redirect. */
 const LEAF_PAGES = ['about', 'follow'];
 const SECTIONS: Section[] = ['projects', 'articles'];
@@ -94,18 +94,19 @@ function attachmentIds(data: RedirectData): Record<string, number[]> {
   return attachments;
 }
 
-// A term whose own slug is its published tag's slug goes in `tags`; any other published term maps to its tag's slug.
+// A published term with another slug maps to its tag's slug in `terms`, unless it is a tag term whose own slug is a
+// published tag's; `tags` lists the published tag slugs no `terms` value names, so the function serves the page of
+// every slug in either without listing one twice.
 function termTargets(data: RedirectData, entries: PublishedEntry[]): Pick<FunctionData, 'tags' | 'terms'> {
   const publishedTags = collectTags(entries.map(({ tags }) => ({ data: { tags } })));
-  const tags = new Set<string>();
   const terms: Record<string, string> = {};
   for (const [key, name] of Object.entries(data.terms)) {
     const slug = tagSlug(name);
-    if (!publishedTags.has(slug)) continue;
-    if (key.split('/')[1] === slug) tags.add(slug);
-    else terms[key] = slug;
+    const [kind, keySlug = ''] = key.split('/');
+    if (publishedTags.has(slug) && keySlug !== slug && !(kind === 'tag' && publishedTags.has(keySlug))) terms[key] = slug;
   }
-  return { tags: [...tags], terms };
+  const mapped = new Set(Object.values(terms));
+  return { tags: [...publishedTags.keys()].filter((slug) => !mapped.has(slug)), terms };
 }
 
 // The function redirects a path and everything under it, so no key may cover the site's own pages or a target.
