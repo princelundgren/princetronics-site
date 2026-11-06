@@ -13,6 +13,7 @@ const topics = [...new Set(learning.map((entry) => entry.topic))].sort((a, b) =>
   description="Guides, open-source projects and courses worth your time."
   canonicalPath="/learning/"
   showLearning={learning.length > 0}
+  currentSection="learning"
 >
   <h1>Learning</h1>
   {learning.length === 0 && <p>Nothing on the list yet.</p>}

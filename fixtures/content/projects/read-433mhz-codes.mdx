@@ -50,6 +50,7 @@ void setup() {
 }
 
 void loop() {
+  // Print each code the receiver hears.
   if (receiver.available()) {
     Serial.println(receiver.getReceivedValue());
     receiver.resetAvailable();

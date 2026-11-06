@@ -40,6 +40,7 @@ const guideBody = guide && splitAtFirstStep(await Astro.slots.render('default'))
   canonicalPath={path}
   type="article"
   showLearning={await hasLearningEntries()}
+  currentSection={section}
 >
   <article class="entry">
     <h1>{data.title}</h1>

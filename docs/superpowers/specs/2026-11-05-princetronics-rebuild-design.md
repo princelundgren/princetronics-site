@@ -133,7 +133,8 @@ Calm and light, in the greys of the WordPress site, with the sky blue of its log
   lighter than `#767676`.
 - **Dark mode:** follows the reader's system setting: the charcoal as the page, lighter greys for text, the same sky
   blue, and the same contrast *(my call)*.
-- **Code blocks:** dark, with a copy button.
+- **Code blocks:** dark, with a copy button, in Shiki's `github-dark-default` colours, whose comments also meet AA *(my
+  call: Astro's default `github-dark` greys its comments at 3:1)*.
 
 ## Migration
 

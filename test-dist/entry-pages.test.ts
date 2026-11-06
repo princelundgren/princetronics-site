@@ -1,5 +1,6 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
+import { contrastRatio } from '../src/lib/contrast';
 
 // Runs against dist/ from the production build that `npm run test:dist` makes first.
 const page = (path: string) => readFileSync(`dist/${path}`, 'utf8');
@@ -20,6 +21,17 @@ describe('project and article pages', () => {
       for (const removed of ['aria-label="On this page"', 'class="why-how-result"', '← Projects', '← Articles', '<iframe']) {
         expect(html, `${path} ${removed}`).not.toContain(removed);
       }
+    }
+  });
+
+  it('colours every token of a code block at 4.5:1 or more on its background', () => {
+    const block = page('projects/read-433mhz-codes/index.html').match(/<pre[\s\S]*?<\/pre>/)?.[0] ?? '';
+    const background = block.match(/background-color:(#[0-9a-f]{6})/i)?.[1] ?? '';
+    const colours = new Set([...block.matchAll(/(?<!-)color:(#[0-9a-f]{6})/gi)].map(([, colour]) => colour));
+
+    expect(colours.size).toBeGreaterThan(1);
+    for (const colour of colours) {
+      expect(contrastRatio(colour, background), colour).toBeGreaterThanOrEqual(4.5);
     }
   });
 

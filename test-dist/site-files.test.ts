@@ -23,6 +23,18 @@ describe('RSS feed', () => {
   });
 });
 
+describe('fonts', () => {
+  const files = readdirSync('dist', { recursive: true }) as string[];
+
+  it('are served from the site, with nothing fetched from Google', () => {
+    const textFiles = files.filter((path) => /\.(html|css|js|xml)$/.test(path));
+    for (const path of textFiles) {
+      expect(read(path), path).not.toMatch(/fonts\.(googleapis|gstatic)\.com/);
+    }
+    expect(files.filter((path) => path.endsWith('.woff2')).length).toBeGreaterThan(0);
+  });
+});
+
 describe('draft files', () => {
   it('are not copied into the build, not even unlinked', () => {
     const digest = (path: string) => createHash('sha256').update(readFileSync(path)).digest('hex');

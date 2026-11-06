@@ -1,0 +1,16 @@
+function relativeLuminance(hex: string): number {
+  const digits = hex.replace(/^#/, '');
+  const full = digits.length === 3 ? [...digits].map((digit) => digit + digit).join('') : digits;
+  if (!/^[0-9a-f]{6}$/i.test(full)) throw new Error(`Colour ${JSON.stringify(hex)} is not #rgb or #rrggbb`);
+  const [red, green, blue] = [0, 2, 4].map((start) => {
+    const channel = parseInt(full.slice(start, start + 2), 16) / 255;
+    return channel <= 0.04045 ? channel / 12.92 : ((channel + 0.055) / 1.055) ** 2.4;
+  });
+  return 0.2126 * red! + 0.7152 * green! + 0.0722 * blue!;
+}
+
+/** The WCAG 2.x contrast ratio of two `#rgb` or `#rrggbb` colours, from 1 to 21; throws on any other form. */
+export function contrastRatio(foreground: string, background: string): number {
+  const [lighter, darker] = [relativeLuminance(foreground), relativeLuminance(background)].sort((a, b) => b - a);
+  return (lighter! + 0.05) / (darker! + 0.05);
+}

@@ -1,5 +1,5 @@
 ---
-import { getImage } from 'astro:assets';
+import { Font, getImage } from 'astro:assets';
 import CopyCodeButton from '../components/CopyCodeButton.astro';
 import '../styles/global.css';
 
@@ -11,9 +11,12 @@ interface Props {
   showLearning: boolean;
   image?: ImageMetadata;
   type?: 'website' | 'article';
+  /** The navigation item to mark as the section this page belongs to. */
+  currentSection?: 'projects' | 'articles' | 'learning' | 'about';
 }
 
-const { title, description, canonicalPath, showLearning, image, type = 'website' } = Astro.props;
+const { title, description, canonicalPath, showLearning, image, type = 'website', currentSection } = Astro.props;
+const current = (section: Props['currentSection']) => (section === currentSection ? 'true' : undefined);
 const site = import.meta.env.SITE;
 const canonical = canonicalPath === undefined ? undefined : new URL(canonicalPath, site);
 const ogImage = image ? new URL((await getImage({ src: image, width: 1200 })).src, site) : undefined;
@@ -25,6 +28,8 @@ const pageTitle = canonicalPath === '/' ? title : `${title} · PrinceTronics`;
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <Font cssVariable="--font-heading" preload />
+    <Font cssVariable="--font-text" preload />
     <title>{pageTitle}</title>
     <meta name="description" content={description} />
     {canonical && <link rel="canonical" href={canonical} />}
@@ -39,20 +44,28 @@ const pageTitle = canonicalPath === '/' ? title : `${title} · PrinceTronics`;
   </head>
   <body>
     <header class="site-header">
-      <a class="brand" href="/">PrinceTronics</a>
-      <nav aria-label="Main">
-        <a href="/projects/">Projects</a>
-        <a href="/articles/">Articles</a>
-        {showLearning && <a href="/learning/">Learning</a>}
-        <a href="/about/">About</a>
-      </nav>
+      <div>
+        <a class="mark" href="/" aria-label="PrinceTronics">P</a>
+        <nav aria-label="Main">
+          <a href="/projects/" aria-current={current('projects')}>Projects</a>
+          <a href="/articles/" aria-current={current('articles')}>Articles</a>
+          {showLearning && <a href="/learning/" aria-current={current('learning')}>Learning</a>}
+          <a href="/about/" aria-current={current('about')}>About</a>
+        </nav>
+      </div>
     </header>
     <main>
       <slot />
     </main>
     <footer class="site-footer">
-      <a href="/follow/">Follow</a>
-      <a href="/rss.xml">RSS</a>
+      <div>
+        <span>PrinceTronics</span>
+        <nav aria-label="Footer">
+          <a href="/follow/">Follow</a>
+          <a href="/rss.xml">RSS</a>
+          <a href="/about/">About</a>
+        </nav>
+      </div>
     </footer>
     <CopyCodeButton />
   </body>
