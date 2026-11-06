@@ -9,6 +9,8 @@ import { entryUrl, type Section } from '../src/lib/urls';
 
 const MAX_BYTES = 10_240;
 const RESERVED_SLUGS = ['projects', 'articles', 'tags', 'learning', 'about', 'follow', 'rss.xml', 'wp-content', '_astro'];
+/** Reserved slugs that are single pages: the site builds nothing under them, so a path below one may redirect. */
+const LEAF_PAGES = ['about', 'follow'];
 const SECTIONS: Section[] = ['projects', 'articles'];
 
 type PublishedEntry = { url: string; legacySlug?: string; tags: string[]; file: string };
@@ -111,7 +113,8 @@ function pathUrls(data: RedirectData): Record<string, string> {
   const keys = Object.keys(data.paths);
   for (const [from, to] of Object.entries(data.paths)) {
     const section = from.split('/')[1];
-    if (section === '' || RESERVED_SLUGS.includes(section)) {
+    const isUnderLeafPage = LEAF_PAGES.includes(section) && from !== `/${section}/`;
+    if (section === '' || (RESERVED_SLUGS.includes(section) && !isUnderLeafPage)) {
       throw new Error(`redirects.json: paths["${from}"] would shadow the site's own pages`);
     }
     const covering = keys.find((key) => to.startsWith(key));

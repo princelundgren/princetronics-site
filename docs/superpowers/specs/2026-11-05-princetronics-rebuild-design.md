@@ -163,6 +163,7 @@ Calm and light, in the greys of the WordPress site, with the sky blue of its log
     them out. A `/tag/<x>/` whose slug is unchanged is that tag page, served as is; its `page/N/` and `feed/` forms
     redirect to it.
   - `/?p=<id>`, `/?page_id=<id>` and `/?attachment_id=<id>` → the new URL of that post, page or its post.
+  - The attachment page of an image on a page (`/about/<image>/`) → that page; of an image on nothing → `/`.
   - `/wp-sitemap*.xml` → Astro's sitemap index.
   - WordPress internals → 410.
   - Author, date, search and pagination archives, and their query forms → `/`.
