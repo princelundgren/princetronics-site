@@ -75,7 +75,7 @@ Every project and article starts the same way:
    and in link previews;
 4. one quiet line with the date, and the updated date when there is one.
 
-Then the body, which depends on the type. Tags come last, as links to their tag pages. There is no Why / How / Result
+Then the body, which depends on the type. Tags close it, as links to their tag pages. There is no Why / How / Result
 block, no difficulty or time estimate, and no "← Projects" link above the title.
 
 - **projects** (`/projects/<slug>/`): `area: maker | software`, plus an optional `guide` block.
@@ -93,8 +93,8 @@ block, no difficulty or time estimate, and no "← Projects" link above the titl
 - **articles** (`/articles/<slug>/`): best practices in software and cloud. Normal long-form posts.
 - **learning** (`/learning/`): a data collection of recommended guides, open-source projects and courses (title, URL,
   type, topic, one-line why). Rendered as one page grouped by topic, not as posts.
-- **Tag pages** (`/tag/<tag>/`) list everything with that tag, as cards. WordPress used the same path, so an old tag
-  link whose slug is unchanged needs no redirect.
+- **Tag pages** (`/tag/<tag>/`) list everything with that tag, as cards. Every published tag's page is served at that
+  path; WordPress used the same one, so an old tag link whose slug is unchanged needs no redirect.
 - **Pages:** About (`/about/`), Follow (`/follow/`: the RSS link; email later if ever), and a 404 page.
 - **Every entry:** `publishDate`, `updatedDate?`, `draft`, `tags[]`, `cover`, `summary`, and `legacySlug?` for
   migrated posts.
@@ -113,9 +113,9 @@ block, no difficulty or time estimate, and no "← Projects" link above the titl
 **Navigation:** Projects · Articles · Learning · About. Learning appears in the navigation once it has entries *(my
 call)*. The footer is in *Look*.
 
-**Home:** "PrinceTronics" as the page title, the About page's `summary` (its opening line) under it, then the newest projects and
-articles together as cards. The Projects, Articles and tag pages list theirs as the same cards. A card is the cover,
-"Project" or "Article" with the month and year, the title, and the `summary`.
+**Home:** "PrinceTronics" as the page title, the About page's `summary` (its opening line) under it, then the newest
+projects and articles together as cards. The Projects, Articles and tag pages list theirs as the same cards. A card is
+the cover, "Project" or "Article" with the month and year, the title, and the `summary`.
 
 ## Look
 
@@ -126,14 +126,13 @@ Calm and light, in the greys of the WordPress site, with the sky blue of its log
   is white with a sky-blue underline. No site name in the header.
 - **Footer:** the same charcoal, with "PrinceTronics" and the Follow, RSS and About links.
 - **Type:** headings in Source Serif 4 at weight 300; body text in Inter at 400, and 500 for the navigation and tag
-  pills. Both fonts are served from the site itself,
-  not from Google *(my call)*.
+  pills. Both fonts are served from the site itself, not from Google *(my call)*.
 - **Colour:** headings `#444`, text `#666`, on white. No black text. Links and tag pills in a darker shade of the sky
   blue; the sky blue itself only on charcoal or as an accent, since on white it is too light for text.
 - **Contrast:** all text meets WCAG 2.2 AA, 4.5:1 for normal text, so small grey text such as dates and captions is no
   lighter than `#767676`.
-- **Dark mode:** follows the reader's system setting, with the same charcoal, greys and sky blue and the same
-  contrast *(my call)*.
+- **Dark mode:** follows the reader's system setting: the charcoal as the page, lighter greys for text, the same sky
+  blue, and the same contrast *(my call)*.
 - **Code blocks:** dark, with a copy button.
 
 ## Migration
@@ -160,8 +159,8 @@ Calm and light, in the greys of the WordPress site, with the sky blue of its log
   - Comments feeds → 410.
   - `/category/<x>/`, and `/tag/<x>/` where `<x>` is not the new slug, → the tag page of the category or tag with that
     name, otherwise `/`. The match goes by name: WordPress drops `+` and `#` from slugs, and the new tag URLs spell
-    them out. A `/tag/<x>/` whose slug is unchanged is that tag page, served as is; its `page/N/` and `feed/` forms
-    redirect to it.
+    them out. A `/tag/<x>/` that is a published tag's page is served as is; its `page/N/` and `feed/` forms redirect
+    to it.
   - `/?p=<id>`, `/?page_id=<id>` and `/?attachment_id=<id>` → the new URL of that post, page or its post.
   - The attachment page of an image on a page (`/about/<image>/`) → that page; of an image on nothing → `/`.
   - `/wp-sitemap*.xml` → Astro's sitemap index.
