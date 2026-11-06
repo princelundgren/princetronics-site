@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { byNewest, entryUrl, isPublished } from '../src/lib/entries';
+import { byNewest, isPublished } from '../src/lib/entries';
+import { entryUrl } from '../src/lib/urls';
 
 describe('entryUrl', () => {
   it('puts an entry under its section with a trailing slash', () => {

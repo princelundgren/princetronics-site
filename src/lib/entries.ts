@@ -1,11 +1,5 @@
 import { type CollectionEntry, getCollection } from 'astro:content';
-
-export type Section = 'projects' | 'articles';
-
-/** The page URL of an entry: `/<section>/<id>/`. */
-export function entryUrl(section: Section, id: string): string {
-  return `/${section}/${id}/`;
-}
+import type { Section } from './urls';
 
 /** Whether an entry belongs on the site: drafts show in `astro dev` and never in a production build. */
 export function isPublished(entry: { data: { draft: boolean } }, isProduction: boolean): boolean {

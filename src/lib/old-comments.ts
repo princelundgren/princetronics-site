@@ -1,5 +1,5 @@
 import { getCollection } from 'astro:content';
-import type { Section } from './entries';
+import type { Section } from './urls';
 import type { Comment } from './schemas';
 
 /** The old comments kept for an entry, or none: most entries have no comments file. */

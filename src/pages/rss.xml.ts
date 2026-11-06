@@ -1,5 +1,6 @@
 import rss from '@astrojs/rss';
-import { allPublishedEntries, entryUrl } from '../lib/entries';
+import { allPublishedEntries } from '../lib/entries';
+import { entryUrl } from '../lib/urls';
 
 export async function GET() {
   const entries = await allPublishedEntries();
