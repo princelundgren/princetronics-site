@@ -89,6 +89,8 @@ describe('buildFunctionCode', () => {
   for (const [name, paths, named] of [
     ['shadows a section', { '/projects/': '/follow/' }, /\/projects\//],
     ['shadows the whole site', { '/': '/follow/' }, /"\/"/],
+    ['shadows the About page', { '/about/': '/follow/' }, /"\/about\/"/],
+    ['shadows a page in a section', { '/projects/x/': '/follow/' }, /\/projects\/x\//],
     ['points at another redirected path', { '/a/': '/b/', '/b/': '/follow/' }, /\/b\//],
     ['points under itself', { '/a/': '/a/b/' }, /\/a\/b\//],
   ] as const) {
@@ -100,6 +102,16 @@ describe('buildFunctionCode', () => {
       expect(() => buildFunctionCode(dir, template)).toThrow(named);
     });
   }
+
+  it('redirects a path under the About or Follow page, which have nothing built under them', () => {
+    const dir = contentCopy();
+    editRedirects(dir, (data) => {
+      Object.assign(data.paths, { '/about/old-photo/': '/about/', '/follow/old-form/': '/follow/' });
+    });
+    const code = buildFunctionCode(dir, template);
+    expect(code).toContain('"/about/old-photo/":"/about/"');
+    expect(code).toContain('"/follow/old-form/":"/follow/"');
+  });
 
   it("fits the old site's counts in 10,240 bytes: 12 posts, 63 attachments, 104 published terms", () => {
     const dir = contentCopy();
