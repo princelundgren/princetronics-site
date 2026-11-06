@@ -16,8 +16,8 @@ Fixtures are invented sample content.
 ## Content folder
 
 `CONTENT_DIR` names the content folder (default `fixtures/content`), resolved against the working directory. Its
-layout is the contract between the two repos: see *Content folder contract* in
-`docs/superpowers/plans/2026-11-05-princetronics-platform.md`. Its `public/` folder is served from the site root.
+layout is the contract between the two repos: see *Content folder contract* in the design spec's *Repositories,
+preview and deploy*. Its `public/` folder is served from the site root.
 
 ```sh
 CONTENT_DIR=../path/to/content npm run dev
@@ -30,9 +30,26 @@ CONTENT_DIR=../path/to/content npm run dev
 - `npm run test:dist`: builds, then tests the built site (`test-dist/`)
 - `npm run check`: `astro check`
 - `npx vitest run test/<file>.test.ts`: one test file
+- `npm run url-check -- --inventory <file> --dist dist --function edge-dist/viewer-request.js`: every inventory URL
+  (`[{ url, gone? }]`) must end in 200, or 410 when `gone`, within two redirects; `--live [--connect-to <host>]`
+  instead sends real requests through curl, one every 400 ms
 
 Stop `astro dev` (`npx astro dev stop`) before a build: the build regenerates `.astro/`, which the dev server reads,
 and a build against another content folder leaves a running dev server failing to render entries.
+
+## Infrastructure (`infra/`)
+
+A CDK app with its own package (`cd infra && npm ci`). Synth reads the viewer-request function from
+`edge-dist/viewer-request.js`, so run `npm run build:edge` at the root first.
+
+- `npm test`, `npx tsc --noEmit`: tests and types
+- `npx cdk synth -c workloadAccount=… -c zoneAccount=… -c hostedZoneId=… -c contentRepo=… -c budgetEmail=…`, plus
+  optional `oidcProviderArn` and `functionCode`; `infra/lib/inputs.ts` holds each input's form, and CI's `infra`
+  job synthesizes with invented values
+- Real inputs go only in `infra/cdk.context.json`, which is gitignored
+- cdk-nag runs on every synth and fails it on a finding: acknowledge one at its resource with
+  `Validations.of(…).acknowledge`, the exact ID synth prints (its `[…]` suffix included, where it has one) and a
+  reason
 
 ## Conventions
 

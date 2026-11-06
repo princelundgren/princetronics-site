@@ -3,6 +3,7 @@ title: A line-following robot
 summary: Not finished yet.
 publishDate: 2026-04-01
 draft: true
+legacySlug: old-robot
 tags: [Robots, Arduino]
 cover: ./draft-robot/cover.jpg
 coverAlt: A half-built robot chassis

@@ -1,11 +1,13 @@
 ---
 status: building
-verified: 2026-11-05
+verified: 2026-11-06
 governs:
   - src/**
   - astro.config.mjs
   - fixtures/**
   - .github/**
+  - edge/**
+  - infra/**
 ---
 
 # PrinceTronics rebuild: design
@@ -159,25 +161,47 @@ and articles together. Learning appears in the navigation once it has entries *(
   - **CI**, in two jobs:
     1. **Build job, with no AWS access:** check out the platform at a pinned commit SHA with its lockfile, build, run
        the schema check and the URL check against the build, and upload the output as an artifact.
-    2. **Deploy job:** runs no npm code, only the AWS CLI. It syncs the artifact to S3 and nothing else.
+    2. **Deploy job:** runs no npm code, only the AWS CLI. It syncs the artifact to S3, then compares the live
+       function with the build's and fails, naming the infrastructure workflow, when they differ.
   - **The function's code** is generated from the platform template and the redirect data: post redirects come from
     each entry's `legacySlug`, so that fact lives in one place, and archives use prefix rules. The infrastructure code
     owns the function and takes the generated code as its input; the generation step fails above CloudFront's 10 KB
-    limit. Redirect data changes only when an old post moves, so the function changes only with an infrastructure
-    deploy.
+    limit. The function changes when the redirect data does (an old post moves) or the set of published tags does, and
+    only through an infrastructure deploy.
   - **No cache invalidations** *(my call)*: hashed assets (`/_astro/`) are cached for a year, everything else with a
     short `max-age` (a minute), so a deploy shows within a minute without an invalidation request.
   - *Builder's call: how content and platform combine (npm package, git submodule or CI checkout).*
 - **AWS access from CI** uses GitHub OIDC with two roles, both trusting only the content repo:
-  - **Deploy role:** write and delete in the site bucket, nothing else.
-  - **Infrastructure role:** separate, for infrastructure changes, used by a manually started workflow.
+  - **Deploy role:** list, write and delete in the site bucket, and read the viewer-request function; nothing else.
+  - **Infrastructure role:** separate, for infrastructure changes, used by a manually started workflow. It can only
+    assume the workload account's CDK bootstrap roles (deploy, file publishing, lookup). No workflow reaches the
+    hosted zone's account: the maintainer deploys the record-writer access stack there by hand.
   - **Trust conditions:** `aud` = `sts.amazonaws.com`, and `sub` pinned to the `main` branch. GitHub Free gives a
     private repository no environments, and the maintainer keeps the Free plan (maintainer, 2026-11-06). The content
     repo is new, so its `sub` uses GitHub's immutable form with owner and repository IDs
-    (`repo:<owner>@<id>/<repo>@<id>:ref:refs/heads/main`); match that form exactly.
+    (`repo:<owner>@<id>/<repo>@<id>:ref:refs/heads/main`); match that form exactly. Each role also pins
+    `job_workflow_ref` to its own workflow on `main`, `deploy.yml` or `infrastructure.yml`, so neither workflow can
+    assume the other's role.
 - **Local preview** is the main review step: `astro dev` against the content checkout, with drafts visible locally and
   never built for production. A separate dev environment is optional and not needed for launch. If one is added later,
   it needs its own distribution and function, its own pricing plan or pay-as-you-go, and `noindex`.
+- **Content folder contract:** the layout of the folder `CONTENT_DIR` names, which the content repo holds and the
+  platform builds from:
+
+  ```
+  <CONTENT_DIR>/
+    projects/<slug>.md|mdx         images beside it: projects/<slug>/...
+    articles/<slug>.md|mdx
+    learning.json                  array of learning entries, each with an `id`
+    pages/about.md, pages/follow.md
+    comments/projects/<slug>.json  { "comments": Comment[] }, one file per entry that has old comments
+    comments/articles/<slug>.json
+    redirects.json                 the WordPress ids, terms and fixed paths the function maps
+    public/                        served from the site root as-is (wp-content/uploads/..., favicon)
+  ```
+
+  A comment's `text` is plain text with HTML entities decoded: a blank line separates paragraphs, a single newline is
+  a line break, and a line starting with ```` ``` ```` opens or closes a code block. Any markup in it is shown as text.
 
 ## Hosting and cut-over
 
@@ -203,7 +227,8 @@ and articles together. Learning appears in the navigation once it has entries *(
     workload account before building.
   - It requires an AWS WAF web ACL on the distribution, which cannot be removed afterwards. The infrastructure code
     creates it with at most 5 rules: an IP rate-based rule, plus the managed protections the Free plan includes.
-  - It allows only managed cache and origin-request policies, at most 5 cache behaviours, and no rule groups.
+  - It allows only managed cache and origin-request policies, at most 5 cache behaviours, and no custom rule
+    groups; each AWS managed rule group counts as one of the 5 rules.
   - A distribution on a plan can't be deleted, nor its web ACL detached, until the plan is cancelled, so a change
     that would replace either has to cancel the plan first.
   - It has no KeyValueStore, and Lambda@Edge is billed separately, so nothing uses either.
@@ -240,7 +265,8 @@ New comment posting and new projects or articles are not launch blockers.
 
 - the visual design within the mockup's structure
 - the Astro add-ons (MDX, sitemap, RSS, image handling)
-- the infrastructure-as-code tool and the converter
+- the infrastructure-as-code tool (chosen: AWS CDK in TypeScript, in `infra/`, with cdk-nag on every synth) and the
+  converter
 - the content/platform combining mechanism
 - the code-block and "On this page" components
 - the function's internal structure, within the size limit

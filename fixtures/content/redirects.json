@@ -1,0 +1,11 @@
+{
+  "posts": { "101": "read-433mhz-codes-with-arduino" },
+  "pages": { "2": "/about/", "5": "/follow/" },
+  "attachments": { "201": "101" },
+  "terms": {
+    "category/arduino": "ARDUINO",
+    "tag/433-mhz": "433 MHz",
+    "tag/robots": "Robots"
+  },
+  "paths": { "/email-subscription/": "/follow/" }
+}
