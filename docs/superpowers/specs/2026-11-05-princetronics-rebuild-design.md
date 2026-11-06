@@ -222,7 +222,8 @@ and articles together. Learning appears in the navigation once it has entries *(
     workload account before building.
   - It requires an AWS WAF web ACL on the distribution, which cannot be removed afterwards. The infrastructure code
     creates it with at most 5 rules: an IP rate-based rule, plus the managed protections the Free plan includes.
-  - It allows only managed cache and origin-request policies, at most 5 cache behaviours, and no rule groups.
+  - It allows only managed cache and origin-request policies, at most 5 cache behaviours, and no custom rule
+    groups; each AWS managed rule group counts as one of the 5 rules.
   - A distribution on a plan can't be deleted, nor its web ACL detached, until the plan is cancelled, so a change
     that would replace either has to cancel the plan first.
   - It has no KeyValueStore, and Lambda@Edge is billed separately, so nothing uses either.
