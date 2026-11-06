@@ -5,9 +5,6 @@ publishDate: 2026-02-01
 tags: [CI, Security]
 cover: ./pin-your-ci-actions/cover.jpg
 coverAlt: A padlock drawn on a whiteboard
-why: A compromised action runs with your token.
-how: Reference each action by its full commit SHA, with the version in a comment.
-result: Updates become deliberate, reviewed changes.
 ---
 
 ## The risk

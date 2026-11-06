@@ -7,9 +7,6 @@ legacySlug: old-robot
 tags: [Robots, Arduino]
 cover: ./draft-robot/cover.jpg
 coverAlt: A half-built robot chassis
-why: To try a new motor driver.
-how: Two motors, two sensors.
-result: Not yet.
 area: maker
 ---
 

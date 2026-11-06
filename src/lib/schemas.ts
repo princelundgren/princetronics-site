@@ -8,16 +8,23 @@ const partSchema = z.object({
   name: z.string(),
   quantity: z.number().int().positive(),
   price: z.string().optional(),
-  whereToBuy: z.string(),
+  whereToBuy: z.string().optional(),
 });
 
 const guideSchema = z.object({
-  difficulty: z.enum(['beginner', 'intermediate', 'advanced']),
-  time: z.string(),
-  cost: z.string(),
   parts: z.array(partSchema).min(1),
   tools: z.array(z.string()),
 });
+
+const videoSchema = z
+  .url({ protocol: /^https$/, hostname: /^(www\.)?youtube\.com$/ })
+  .refine(
+    (url) => {
+      const parsed = URL.parse(url);
+      return parsed?.pathname === '/watch' && Boolean(parsed.searchParams.get('v'));
+    },
+    { error: (issue) => `Video ${JSON.stringify(issue.input)} must be a YouTube watch URL: https://www.youtube.com/watch?v=<id>` },
+  );
 
 const tagSchema = z.string().refine((tag) => tagSlug(tag) !== '', {
   error: (issue) => `Tag ${JSON.stringify(issue.input)} needs at least one ASCII letter or digit to make its page URL`,
@@ -33,9 +40,6 @@ function entryFields<T extends z.ZodType>(image: ImageField<T>) {
     tags: z.array(tagSchema).default([]),
     cover: image(),
     coverAlt: z.string(),
-    why: z.string(),
-    how: z.string(),
-    result: z.string(),
     legacySlug: z.string().optional(),
   };
 }
@@ -46,6 +50,7 @@ export function makeProjectSchema<T extends z.ZodType>(image: ImageField<T>) {
     ...entryFields(image),
     area: z.enum(['maker', 'software']),
     repoUrl: z.httpUrl().optional(),
+    video: videoSchema.optional(),
     guide: guideSchema.optional(),
   });
 }

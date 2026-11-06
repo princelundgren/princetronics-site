@@ -1,0 +1,24 @@
+---
+import { Image } from 'astro:assets';
+
+interface Props {
+  cover: ImageMetadata;
+  coverAlt: string;
+  video?: string;
+}
+
+const { cover, coverAlt, video } = Astro.props;
+---
+
+<div class="demo">
+  {
+    video ? (
+      <a href={video} aria-label="Watch the video on YouTube">
+        <Image src={cover} alt={coverAlt} width={1200} class="cover" />
+        <span class="play" aria-hidden="true">▶</span>
+      </a>
+    ) : (
+      <Image src={cover} alt={coverAlt} width={1200} class="cover" />
+    )
+  }
+</div>

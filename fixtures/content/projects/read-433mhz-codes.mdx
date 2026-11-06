@@ -6,15 +6,10 @@ updatedDate: 2026-02-15
 tags: [Arduino, 433 MHz]
 cover: ./read-433mhz-codes/cover.jpg
 coverAlt: A 433 MHz receiver wired to an Arduino Uno
-why: Wireless wall sockets are cheap, and their remotes are easy to imitate.
-how: A receiver module on a digital pin and a library that decodes the pulses.
-result: The serial monitor prints each button's code, ready to send from a transmitter.
 legacySlug: read-433mhz-codes-with-arduino
 area: maker
+video: https://www.youtube.com/watch?v=example0001
 guide:
-  difficulty: beginner
-  time: ~1 hour
-  cost: ~100 SEK
   parts:
     - name: Arduino Uno
       quantity: 1
@@ -25,9 +20,10 @@ guide:
       whereToBuy: Online electronics shops
     - name: Jumper wires
       quantity: 3
-      whereToBuy: Any electronics shop
   tools: [USB cable, Computer with the Arduino IDE]
 ---
+
+The receiver hears what the remote sends, and the sketch prints it as a number.
 
 ## Wire the receiver
 

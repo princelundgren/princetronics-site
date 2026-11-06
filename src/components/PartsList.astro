@@ -1,0 +1,35 @@
+---
+import type { Guide } from '../lib/schemas';
+
+interface Props {
+  parts: Guide['parts'];
+  tools: string[];
+}
+
+const { parts, tools } = Astro.props;
+const shopUrl = (whereToBuy: string) => (URL.parse(whereToBuy)?.protocol === 'https:' ? whereToBuy : undefined);
+---
+
+<ul class="parts">
+  {
+    parts.map((part) => (
+      <li>
+        <span>
+          {part.name}
+          {part.price && <span class="muted"> · {part.price}</span>}
+          {part.whereToBuy &&
+            (shopUrl(part.whereToBuy) ? (
+              <>
+                {' · '}
+                <a href={part.whereToBuy}>where to buy</a>
+              </>
+            ) : (
+              <span class="muted"> · {part.whereToBuy}</span>
+            ))}
+        </span>
+        <span class="qty">{part.quantity}</span>
+      </li>
+    ))
+  }
+</ul>
+{tools.length > 0 && <p><strong>Tools:</strong> {tools.join(', ')}</p>}
