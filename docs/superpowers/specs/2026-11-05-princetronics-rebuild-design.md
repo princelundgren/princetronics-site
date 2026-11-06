@@ -164,8 +164,8 @@ and articles together. Learning appears in the navigation once it has entries *(
   - **The function's code** is generated from the platform template and the redirect data: post redirects come from
     each entry's `legacySlug`, so that fact lives in one place, and archives use prefix rules. The infrastructure code
     owns the function and takes the generated code as its input; the generation step fails above CloudFront's 10 KB
-    limit. Redirect data changes only when an old post moves, so the function changes only with an infrastructure
-    deploy.
+    limit. The function changes when the redirect data does (an old post moves) or the set of published tags does, and
+    only through an infrastructure deploy.
   - **No cache invalidations** *(my call)*: hashed assets (`/_astro/`) are cached for a year, everything else with a
     short `max-age` (a minute), so a deploy shows within a minute without an invalidation request.
   - *Builder's call: how content and platform combine (npm package, git submodule or CI checkout).*
@@ -179,6 +179,23 @@ and articles together. Learning appears in the navigation once it has entries *(
 - **Local preview** is the main review step: `astro dev` against the content checkout, with drafts visible locally and
   never built for production. A separate dev environment is optional and not needed for launch. If one is added later,
   it needs its own distribution and function, its own pricing plan or pay-as-you-go, and `noindex`.
+- **Content folder contract:** the layout of the folder `CONTENT_DIR` names, which the content repo holds and the
+  platform builds from:
+
+  ```
+  <CONTENT_DIR>/
+    projects/<slug>.md|mdx         images beside it: projects/<slug>/...
+    articles/<slug>.md|mdx
+    learning.json                  array of learning entries, each with an `id`
+    pages/about.md, pages/follow.md
+    comments/projects/<slug>.json  { "comments": Comment[] }, one file per entry that has old comments
+    comments/articles/<slug>.json
+    redirects.json                 the WordPress ids, terms and fixed paths the function maps
+    public/                        served from the site root as-is (wp-content/uploads/..., favicon)
+  ```
+
+  A comment's `text` is plain text with HTML entities decoded: a blank line separates paragraphs, a single newline is
+  a line break, and a line starting with ```` ``` ```` opens or closes a code block. Any markup in it is shown as text.
 
 ## Hosting and cut-over
 

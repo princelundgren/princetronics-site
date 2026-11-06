@@ -11,7 +11,8 @@
     "preview": "astro preview",
     "check": "astro check",
     "test": "vitest run --dir test",
-    "test:dist": "astro build && vitest run --dir test-dist"
+    "test:dist": "astro build && vitest run --dir test-dist",
+    "build:edge": "tsx edge/build-function.ts"
   },
   "dependencies": {
     "@astrojs/mdx": "^8.1.2",
@@ -21,7 +22,9 @@
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.12",
+    "tsx": "^4.23.15",
     "typescript": "^6.0.3",
-    "vitest": "^5.1.0"
+    "vitest": "^5.1.0",
+    "yaml": "^2.9.1"
   }
 }

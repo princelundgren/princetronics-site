@@ -16,8 +16,8 @@ Fixtures are invented sample content.
 ## Content folder
 
 `CONTENT_DIR` names the content folder (default `fixtures/content`), resolved against the working directory. Its
-layout is the contract between the two repos: see *Content folder contract* in
-`docs/superpowers/plans/2026-11-05-princetronics-platform.md`. Its `public/` folder is served from the site root.
+layout is the contract between the two repos: see *Content folder contract* in the design spec's *Repositories,
+preview and deploy*. Its `public/` folder is served from the site root.
 
 ```sh
 CONTENT_DIR=../path/to/content npm run dev
