@@ -14,11 +14,12 @@ import {
   ViewerProtocolPolicy,
 } from 'aws-cdk-lib/aws-cloudfront';
 import { S3BucketOrigin } from 'aws-cdk-lib/aws-cloudfront-origins';
-import { Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
+import { PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { LogGroup, RetentionDays } from 'aws-cdk-lib/aws-logs';
 import { CfnSubscription } from 'aws-cdk-lib/aws-pricingplanmanager';
-import { BlockPublicAccess, Bucket, BucketEncryption, type IBucket } from 'aws-cdk-lib/aws-s3';
+import { BlockPublicAccess, Bucket, BucketEncryption, CfnBucket, type IBucket } from 'aws-cdk-lib/aws-s3';
 import type { Construct } from 'constructs';
+import { contentRepoWorkflow } from './github-oidc.js';
 import type { Inputs } from './inputs.js';
 import { SiteBudget } from './site-budget.js';
 import { WebAcl } from './web-acl.js';
@@ -30,14 +31,15 @@ const NOT_FOUND_PAGE = '/404.html';
 
 /**
  * In the workload account: the private bucket, the distribution with its viewer-request function, certificate and
- * web ACL, the CloudFront free-plan subscription, the six alias records in the hosted zone's account, and a budget.
+ * web ACL, the CloudFront free-plan subscription, the six alias records in the hosted zone's account, the role the
+ * content repo's deploy workflow assumes, and a budget.
  */
 export class SiteStack extends Stack {
   readonly bucket: IBucket;
   readonly distribution: Distribution;
   readonly viewerRequest: CloudFrontFunction;
 
-  constructor(scope: Construct, id: string, props: StackProps & { inputs: Inputs }) {
+  constructor(scope: Construct, id: string, props: StackProps & { inputs: Inputs; oidcProviderArn: string }) {
     super(scope, id, props);
     const { inputs } = props;
     const roleArn = recordWriterRoleArn(inputs.zoneAccount);
@@ -119,6 +121,18 @@ export class SiteStack extends Stack {
         });
       }
     }
+
+    const deploy = new Role(this, 'DeployRole', {
+      roleName: 'PrinceTronics-Deploy',
+      assumedBy: contentRepoWorkflow(props.oidcProviderArn, inputs.contentRepo, 'deploy.yml'),
+    });
+    deploy.addToPolicy(new PolicyStatement({ actions: ['s3:ListBucket'], resources: [bucket.bucketArn] }));
+    deploy.addToPolicy(new PolicyStatement({ actions: ['s3:PutObject', 's3:DeleteObject'], resources: [bucket.arnForObjects('*')] }));
+    deploy.addToPolicy(new PolicyStatement({ actions: ['cloudfront:GetFunction'], resources: [viewerRequest.functionArn] }));
+    Validations.of(deploy).acknowledge({
+      id: `AwsSolutions::AwsSolutions-IAM5[Resource::<${this.getLogicalId(bucket.node.defaultChild as CfnBucket)}.Arn>/*]`,
+      reason: 'A deploy writes and deletes any key in the site bucket, and only there.',
+    });
 
     new SiteBudget(this, 'Budget', { email: inputs.budgetEmail });
 

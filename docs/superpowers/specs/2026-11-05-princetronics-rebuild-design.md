@@ -161,7 +161,8 @@ and articles together. Learning appears in the navigation once it has entries *(
   - **CI**, in two jobs:
     1. **Build job, with no AWS access:** check out the platform at a pinned commit SHA with its lockfile, build, run
        the schema check and the URL check against the build, and upload the output as an artifact.
-    2. **Deploy job:** runs no npm code, only the AWS CLI. It syncs the artifact to S3 and nothing else.
+    2. **Deploy job:** runs no npm code, only the AWS CLI. It syncs the artifact to S3, then compares the live
+       function with the build's and fails, naming the infrastructure workflow, when they differ.
   - **The function's code** is generated from the platform template and the redirect data: post redirects come from
     each entry's `legacySlug`, so that fact lives in one place, and archives use prefix rules. The infrastructure code
     owns the function and takes the generated code as its input; the generation step fails above CloudFront's 10 KB
@@ -171,12 +172,16 @@ and articles together. Learning appears in the navigation once it has entries *(
     short `max-age` (a minute), so a deploy shows within a minute without an invalidation request.
   - *Builder's call: how content and platform combine (npm package, git submodule or CI checkout).*
 - **AWS access from CI** uses GitHub OIDC with two roles, both trusting only the content repo:
-  - **Deploy role:** write and delete in the site bucket, nothing else.
-  - **Infrastructure role:** separate, for infrastructure changes, used by a manually started workflow.
+  - **Deploy role:** list, write and delete in the site bucket, and read the viewer-request function; nothing else.
+  - **Infrastructure role:** separate, for infrastructure changes, used by a manually started workflow. It can only
+    assume the workload account's CDK bootstrap roles (deploy, file publishing, lookup). No workflow reaches the
+    hosted zone's account: the maintainer deploys the record-writer access stack there by hand.
   - **Trust conditions:** `aud` = `sts.amazonaws.com`, and `sub` pinned to the `main` branch. GitHub Free gives a
     private repository no environments, and the maintainer keeps the Free plan (maintainer, 2026-11-06). The content
     repo is new, so its `sub` uses GitHub's immutable form with owner and repository IDs
-    (`repo:<owner>@<id>/<repo>@<id>:ref:refs/heads/main`); match that form exactly.
+    (`repo:<owner>@<id>/<repo>@<id>:ref:refs/heads/main`); match that form exactly. Each role also pins
+    `job_workflow_ref` to its own workflow on `main`, `deploy.yml` or `infrastructure.yml`, so neither workflow can
+    assume the other's role.
 - **Local preview** is the main review step: `astro dev` against the content checkout, with drafts visible locally and
   never built for production. A separate dev environment is optional and not needed for launch. If one is added later,
   it needs its own distribution and function, its own pricing plan or pay-as-you-go, and `noindex`.

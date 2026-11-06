@@ -12,6 +12,7 @@ function siteStack(inputs: Inputs = readInputs(testContext())): SiteStack {
   return new SiteStack(new App(), 'PrinceTronics-Site', {
     env: { account: inputs.workloadAccount, region: 'us-east-1' },
     inputs,
+    oidcProviderArn: 'arn:aws:iam::111111111111:oidc-provider/token.actions.githubusercontent.com',
   });
 }
 
