@@ -5,3 +5,5 @@ edge-dist/
 .superpowers/
 .DS_Store
 *.tsbuildinfo
+infra/cdk.out/
+infra/cdk.context.json

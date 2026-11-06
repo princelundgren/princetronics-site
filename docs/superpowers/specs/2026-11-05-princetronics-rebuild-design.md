@@ -7,6 +7,7 @@ governs:
   - fixtures/**
   - .github/**
   - edge/**
+  - infra/**
 ---
 
 # PrinceTronics rebuild: design
@@ -258,7 +259,8 @@ New comment posting and new projects or articles are not launch blockers.
 
 - the visual design within the mockup's structure
 - the Astro add-ons (MDX, sitemap, RSS, image handling)
-- the infrastructure-as-code tool and the converter
+- the infrastructure-as-code tool (chosen: AWS CDK in TypeScript, in `infra/`, with cdk-nag on every synth) and the
+  converter
 - the content/platform combining mechanism
 - the code-block and "On this page" components
 - the function's internal structure, within the size limit
