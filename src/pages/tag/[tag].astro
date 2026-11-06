@@ -20,7 +20,7 @@ const { label, entries } = Astro.props;
 <BaseLayout
   title={`Tagged ${label}`}
   description={`Projects and articles tagged ${label}.`}
-  canonicalPath={`/tags/${tag}/`}
+  canonicalPath={`/tag/${tag}/`}
   showLearning={await hasLearningEntries()}
 >
   <h1>Tagged “{label}”</h1>

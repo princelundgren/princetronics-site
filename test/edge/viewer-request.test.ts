@@ -12,7 +12,7 @@ const data = {
   slugs: { 'old-post': '/projects/new-post/' },
   ids: { p12: '/projects/new-post/', page3: '/about/' },
   attachments: { p12: [201, 202] },
-  tags: ['c-plus-plus', 'arduino', 'rss-feed'],
+  tags: ['c-plus-plus', 'arduino', 'rss-feed', 'embed'],
   terms: { 'tag/cplusplus': 'c-plus-plus' },
   paths: { '/email-subscription/': '/follow/' },
 };
@@ -94,20 +94,27 @@ describe('viewer-request', () => {
   });
 
   it('serves new pages whose slug ends in feed or embed', () => {
-    for (const uri of ['/tags/rss-feed/', '/tags/embed/', '/projects/news-feed/', '/articles/how-to-embed/']) {
+    for (const uri of ['/tag/rss-feed/', '/tag/embed/', '/projects/news-feed/', '/articles/how-to-embed/']) {
       expectServed(WWW, uri, `${uri}index.html`);
     }
   });
 
-  it('maps a term to the tag of its own slug when that tag is published', () => {
-    expectRedirect(WWW, '/tag/arduino/', 'https://www.princetronics.com/tags/arduino/');
-    expectRedirect(WWW, '/category/arduino/feed/atom/', 'https://www.princetronics.com/tags/arduino/');
-    expectRedirect(WWW, '/tag/rss-feed/', 'https://www.princetronics.com/tags/rss-feed/');
+  it('serves a current tag page instead of redirecting it', () => {
+    expectServed(WWW, '/tag/arduino/', '/tag/arduino/index.html');
+  });
+
+  it("redirects a current tag's paged and feed forms to its page", () => {
+    expectRedirect(WWW, '/tag/arduino/page/2/', 'https://www.princetronics.com/tag/arduino/');
+    expectRedirect(WWW, '/tag/arduino/feed/', 'https://www.princetronics.com/tag/arduino/');
+  });
+
+  it('maps a category to the tag of its own slug when that tag is published', () => {
+    expectRedirect(WWW, '/category/arduino/feed/atom/', 'https://www.princetronics.com/tag/arduino/');
   });
 
   it('maps terms by data, else home', () => {
-    expectRedirect(WWW, '/tag/cplusplus/', 'https://www.princetronics.com/tags/c-plus-plus/');
-    expectRedirect(WWW, '/tag/cplusplus/page/2/', 'https://www.princetronics.com/tags/c-plus-plus/');
+    expectRedirect(WWW, '/tag/cplusplus/', 'https://www.princetronics.com/tag/c-plus-plus/');
+    expectRedirect(WWW, '/tag/cplusplus/page/2/', 'https://www.princetronics.com/tag/c-plus-plus/');
     expectRedirect(WWW, '/category/parent/child/', 'https://www.princetronics.com/');
     expectRedirect(WWW, '/tag/unknown/', 'https://www.princetronics.com/');
   });

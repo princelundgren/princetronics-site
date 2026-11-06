@@ -24,12 +24,12 @@ describe('section pages', () => {
 
 describe('tag pages', () => {
   it('builds one page for a tag spelled two ways, listing its published entries only', () => {
-    expect(readdirSync('dist/tags').filter((tag) => tag.toLowerCase() === 'arduino')).toEqual(['arduino']);
-    expect(linkedEntries(page('tags/arduino/index.html'))).toEqual(['fpv-drone', 'read-433mhz-codes']);
+    expect(readdirSync('dist/tag').filter((tag) => tag.toLowerCase() === 'arduino')).toEqual(['arduino']);
+    expect(linkedEntries(page('tag/arduino/index.html'))).toEqual(['fpv-drone', 'read-433mhz-codes']);
   });
 
   it('builds no page for a tag only a draft uses', () => {
-    expect(existsSync('dist/tags/robots')).toBe(false);
+    expect(existsSync('dist/tag/robots')).toBe(false);
   });
 });
 

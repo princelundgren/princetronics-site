@@ -157,7 +157,7 @@ Calm and light, in the greys of the WordPress site, with the sky blue of its log
   - `/<old-slug>/` and **any path under it** (feed, embed, comment pages) → the post's new URL.
   - `/feed/` and its variants → `/rss.xml`.
   - Comments feeds → 410.
-  - `/category/<x>/`, and `/tag/<x>/` where `<x>` is not the new slug, → the tag page of the category or tag with that
+  - `/category/<x>/`, and `/tag/<x>/` where `<x>` is not a published tag's slug, → the tag page of the category or tag with that
     name, otherwise `/`. The match goes by name: WordPress drops `+` and `#` from slugs, and the new tag URLs spell
     them out. A `/tag/<x>/` that is a published tag's page is served as is; its `page/N/` and `feed/` forms redirect
     to it.

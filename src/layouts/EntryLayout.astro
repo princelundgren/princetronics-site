@@ -51,7 +51,7 @@ const hasLinks = project !== undefined && (project.repoUrl !== undefined || rela
     <p class="summary">{data.summary}</p>
     <p class="meta muted">
       {project && <span class="area">{project.area === 'maker' ? 'Maker' : 'Software'}</span>}
-      {data.tags.map((tag) => <a class="tag" href={`/tags/${tagSlug(tag)}/`}>{tag}</a>)}
+      {data.tags.map((tag) => <a class="tag" href={`/tag/${tagSlug(tag)}/`}>{tag}</a>)}
       <span class="date"
         ><time datetime={data.publishDate.toISOString()}>{monthYear(data.publishDate)}</time>{
           data.updatedDate && `, updated ${data.updatedDate.getUTCFullYear()}`

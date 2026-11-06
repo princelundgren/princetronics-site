@@ -50,6 +50,11 @@ function attachmentPost(id) {
   return '';
 }
 
+function isTag(slug) {
+  for (var key in DATA.terms) if (DATA.terms[key] === slug) return true;
+  return DATA.tags.indexOf(slug) !== -1;
+}
+
 function fromTerm(path) {
   var match = path.match(/^\/(category|tag)\/(.*)$/);
   if (!match) return undefined;
@@ -57,8 +62,9 @@ function fromTerm(path) {
   if (!segments.length) return '/';
   var slug = segments[segments.length - 1];
   var key = match[1] + '/' + slug;
-  if (has(DATA.terms, key)) return '/tags/' + DATA.terms[key] + '/';
-  return DATA.tags.indexOf(slug) !== -1 ? '/tags/' + slug + '/' : '/';
+  var tag = has(DATA.terms, key) ? DATA.terms[key] : isTag(slug) && slug;
+  var target = tag ? '/tag/' + tag + '/' : '/';
+  return target === path ? undefined : target;
 }
 
 function fromPaths(path) {
@@ -88,7 +94,7 @@ function destination(path, query) {
   if (target !== undefined) return target;
   var slug = path.split('/')[1];
   if (slug && has(DATA.slugs, slug)) return DATA.slugs[slug];
-  if (/^\/(projects|articles|tags)\//.test(path)) return undefined;
+  if (/^\/(projects|articles|tag)\//.test(path)) return undefined;
   var parent = path.replace(/\/(feed|embed|comment-page-\d+)\/$/, '/');
   return parent !== path ? parent : undefined;
 }
