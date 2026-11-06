@@ -1,67 +1,77 @@
-<h2>PrinceTronics: two kinds of project page</h2>
-<p class="subtitle">Both share the portfolio's top part (title, summary, tags, cover, Why / How / Result). They differ below it: a showcase tells the story, a build guide's main content is the steps.</p>
+<meta charset="utf-8">
+<style>
+  .site { background: #fff; color: #666; font: 400 16px/1.65 Inter, system-ui, sans-serif; border: 1px solid #d0d4da; border-radius: 12px; overflow: hidden; text-align: left; margin-bottom: 28px; }
+  .site .top { background: #2f3238; }
+  .site .top-in { max-width: 1040px; margin: 0 auto; padding: 12px 28px; display: flex; align-items: center; }
+  .site .mark { display: inline-flex; align-items: center; justify-content: center; width: 1.25em; height: 1.25em; border-radius: .28em; background: #74b6d8; color: #2f3238; font: 600 22px/1 "Source Serif 4", Georgia, serif; }
+  .site nav { margin-left: auto; display: flex; gap: 22px; color: #c4c8cf; font-size: 15px; font-weight: 500; }
+  .site nav .on { color: #fff; box-shadow: inset 0 -2px 0 #74b6d8; padding-bottom: 4px; }
+  .site main { max-width: 720px; margin: 0 auto; padding: 48px 28px 44px; }
+  .site main.wide { max-width: 1040px; }
+  .site h1 { font: 300 44px/1.12 "Source Serif 4", Georgia, serif; color: #444; margin: 0 0 12px; }
+  .site .lead { font-size: 20px; line-height: 1.55; margin: 0 0 28px; }
+  .site .demo { aspect-ratio: 16 / 9; border-radius: 14px; background: linear-gradient(135deg, #3a4048, #1f2328); color: #c4c8cf; display: flex; align-items: center; justify-content: center; font-size: 15px; }
+  .site .date { font-size: 14px; color: #767676; margin: 14px 0 0; }
+  .site h2 { font: 300 28px/1.25 "Source Serif 4", Georgia, serif; color: #444; margin: 44px 0 14px; }
+  .site p { margin: 0 0 16px; }
+  .site a { color: #1f6f97; text-decoration: underline; text-decoration-color: #a9d3e8; text-underline-offset: 3px; }
+  .site .parts { list-style: none; padding: 0; margin: 0; border-top: 1px solid #e7e9ec; }
+  .site .parts li { display: flex; justify-content: space-between; gap: 16px; padding: 11px 2px; border-bottom: 1px solid #e7e9ec; }
+  .site .parts .qty { color: #767676; font-size: 15px; white-space: nowrap; }
+  .site pre { background: #1f2328; color: #e6e8eb; border-radius: 10px; padding: 16px 20px; font: 14px/1.6 ui-monospace, Menlo, monospace; overflow-x: auto; }
+  .site .tags { margin-top: 52px; padding-top: 20px; border-top: 1px solid #e7e9ec; display: flex; flex-wrap: wrap; gap: 8px; }
+  .site .tags a { text-decoration: none; background: #eaf4fa; color: #1f5f80; font-size: 14px; font-weight: 500; padding: 5px 12px; border-radius: 999px; }
+  .site .after { margin-top: 18px; font-size: 14px; color: #767676; }
+  .site footer { background: #2f3238; color: #a9aeb6; font-size: 14px; }
+  .site footer div { max-width: 1040px; margin: 0 auto; padding: 20px 28px; display: flex; justify-content: space-between; }
+  .site .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 34px 26px; }
+  .site .cover { aspect-ratio: 16 / 10; border-radius: 10px; background: linear-gradient(135deg, #dfe7ec, #c9d6de); }
+  .site .kind { font-size: 13px; color: #767676; margin: 12px 0 4px; }
+  .site h3 { font: 300 21px/1.3 "Source Serif 4", Georgia, serif; color: #444; margin: 0 0 6px; }
+  .site .card p { font-size: 15px; margin: 0; }
+</style>
 
-<div class="split">
-  <div class="mockup">
-    <div class="mockup-header">A. Showcase: "FPV Racing Drone"</div>
-    <div class="mockup-body">
-      <div class="mock-nav">PrinceTronics | Projects | Articles | Learning | About</div>
-      <p class="label">← Projects</p>
-      <h3>FPV Racing Drone</h3>
-      <p>A 5-inch FPV drone built from parts, tuned for freestyle.</p>
-      <p><span class="label">Maker</span> · <span class="label">Betaflight</span> · <span class="label">ESP32</span> · <span class="label">3D printing</span> · <span class="label">Mar 2026</span></p>
-      <div class="placeholder">Cover photo / video</div>
-      <div class="section">
-        <p><b>Why:</b> the problem or itch it scratched</p>
-        <p><b>How:</b> the key decisions and trade-offs</p>
-        <p><b>Result:</b> what came out of it, with real numbers</p>
-      </div>
-      <h3>What it does</h3>
-      <div class="placeholder">Photos, demo video, features</div>
-      <h3>How it's built</h3>
-      <div class="placeholder">Architecture / parts overview, interesting problems</div>
-      <h3>What I learned</h3>
-      <div class="placeholder">Lessons, what I'd do differently</div>
-      <p><span class="label">Links:</span> source code repo · related articles</p>
-      <p class="label">Suggest a fix (opens GitHub issue) · Comments</p>
-    </div>
-  </div>
+<h2>PrinceTronics: the project page and the home page</h2>
+<p class="subtitle">Invented text. A migrated post looks the same, with its own words and original date. The fonts show only where Source Serif 4 and Inter are installed; the site serves its own copies.</p>
 
-  <div class="mockup">
-    <div class="mockup-header">B. Build guide: "Read 433 MHz codes with Arduino"</div>
-    <div class="mockup-body">
-      <div class="mock-nav">PrinceTronics | Projects | Articles | Learning | About</div>
-      <p class="label">← Projects</p>
-      <h3>Read 433 MHz codes with Arduino</h3>
-      <p>Capture the codes your wireless switches send, so you can control them yourself.</p>
-      <p><span class="label">Maker</span> · <span class="label">Arduino</span> · <span class="label">433 MHz</span> · <span class="label">Jun 2014, updated 2026</span></p>
-      <div class="placeholder">Cover photo of the finished build</div>
-      <div class="section">
-        <p><b>At a glance:</b> Beginner · ~1 hour · ~100 SEK in parts</p>
-        <p><b>Why / How / Result</b> (same block as the showcase, shorter)</p>
-      </div>
-      <div style="display:flex; gap:12px;">
-        <div class="mock-sidebar" style="min-width:150px">
-          <p class="label">On this page</p>
-          <p>What you'll need</p><p>1. Wire the receiver</p><p>2. Install the library</p><p>3. Upload the sketch</p><p>4. Read your codes</p><p>Troubleshooting</p><p>Downloads</p>
-        </div>
-        <div class="mock-content">
-          <h3>What you'll need</h3>
-          <div class="placeholder">Parts table: part · qty · approx. price · where to buy<br>Tools · skills assumed</div>
-          <h3>Step 1: Wire the receiver</h3>
-          <div class="placeholder">Wiring diagram + photo + short text</div>
-          <h3>Step 2: Install the library</h3>
-          <div class="placeholder">Text + code block (copy button)</div>
-          <p>… Steps 3–4 …</p>
-          <h3>Troubleshooting</h3>
-          <div class="placeholder">Common problems, often from reader questions</div>
-          <h3>Downloads</h3>
-          <div class="placeholder">Full sketch · schematic · 3D files</div>
-        </div>
-      </div>
-      <p class="label">Suggest a fix (opens GitHub issue) · Comments (old Q&amp;A kept)</p>
-    </div>
-  </div>
+<div class="site">
+  <div class="top"><div class="top-in"><span class="mark">P</span>
+    <nav><span class="on">Projects</span><span>Articles</span><span>About</span></nav></div></div>
+  <main>
+    <h1>Plant reminder w/ soil sensor &amp; Arduino</h1>
+    <p class="lead">I kept forgetting to water my plants, so I made a sensor that blinks when the soil gets dry.</p>
+    <div class="demo">Cover photo; ▶ opens the video on YouTube</div>
+    <p class="date">May 2026</p>
+    <p style="margin-top:28px">An optional short intro: why I built it, or the problem behind it.</p>
+    <h2>What you'll need</h2>
+    <ul class="parts">
+      <li><span>Arduino Uno</span><span class="qty">1</span></li>
+      <li><span>Soil moisture sensor</span><span class="qty">1</span></li>
+      <li><span>LED and 220 ohm resistor</span><span class="qty">1 each</span></li>
+    </ul>
+    <p style="margin-top:12px"><strong>Tools:</strong> USB cable, computer with the Arduino IDE</p>
+    <h2>Connecting the sensor</h2>
+    <p>Text, then the photo or wiring, then what you should see. <a>A link looks like this.</a></p>
+    <h2>Uploading the code</h2>
+    <pre>int dryLevel = 600;<span style="float:right;font:12px Inter,system-ui,sans-serif;color:#c4c8cf">Copy</span></pre>
+    <div class="tags"><a>Arduino</a><a>Beginner</a><a>sensor</a></div>
+    <p class="after">Suggest a fix · Earlier discussion</p>
+  </main>
+  <footer><div><span>PrinceTronics</span><span>Follow · RSS · About</span></div></footer>
 </div>
 
-<p class="subtitle">Old 2014–2016 posts are just projects or articles in these same layouts, showing their original date. No separate archive.</p>
+<div class="site">
+  <div class="top"><div class="top-in"><span class="mark">P</span>
+    <nav><span>Projects</span><span>Articles</span><span>About</span></nav></div></div>
+  <main class="wide">
+    <h1>PrinceTronics</h1>
+    <p class="lead" style="max-width:640px">The opening line of the About page.</p>
+    <div class="grid">
+      <div class="card"><div class="cover"></div><div class="kind">Project · May 2026</div><h3>Plant reminder w/ soil sensor &amp; Arduino</h3><p>The entry's summary, one sentence.</p></div>
+      <div class="card"><div class="cover"></div><div class="kind">Article · April 2026</div><h3>An article's title</h3><p>The entry's summary, one sentence.</p></div>
+      <div class="card"><div class="cover"></div><div class="kind">Project · June 2014</div><h3>A migrated project</h3><p>Its original opening sentence.</p></div>
+    </div>
+  </main>
+  <footer><div><span>PrinceTronics</span><span>Follow · RSS · About</span></div></footer>
+</div>
+<p class="subtitle">The Projects, Articles and tag pages use the same cards. Learning joins the menu once it has entries.</p>

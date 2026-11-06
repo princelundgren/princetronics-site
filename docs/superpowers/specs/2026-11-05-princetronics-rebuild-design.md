@@ -50,7 +50,7 @@ published. Everything other sites already link to must keep working.
 
 | Decision | Reason |
 |---|---|
-| Astro static site | Content collections give every page type a typed schema, so an incomplete guide fails the build. MDX components cover the parts table and steps. The default `build.format: 'directory'` writes `/<path>/index.html`; `trailingSlash: 'always'` goes with it, as Astro's docs recommend. |
+| Astro static site | Content collections give every page type a typed schema, so an incomplete guide fails the build. Components render the parts list and code blocks. The default `build.format: 'directory'` writes `/<path>/index.html`; `trailingSlash: 'always'` goes with it, as Astro's docs recommend. |
 | Platform repo public, content repo private | Code shows skill. Drafts and history stay private, and published pages are public on the site anyway. |
 | S3 + CloudFront + CloudFront Functions + Route 53, infra as code | Cheap, no servers. Astro's static redirects are meta-refresh pages with no status code, so the real 301s and the `/<path>/` → `index.html` lookup live in a CloudFront Function. |
 | `www.princetronics.com` stays canonical; apex redirects to `www` | That is how the site answers today, so existing links already point there. |
@@ -64,36 +64,77 @@ published. Everything other sites already link to must keep working.
 
 ## Content model
 
-Three collections, tag pages and three standalone pages. Page layouts follow the approved mockup
-(`mockups/project-pages.html`, kept next to this document). Every page has a shared top: title, one-line summary,
-tags, date and updated date, cover, then a Why / How / Result block. The body depends on the type.
+Three collections, tag pages and three standalone pages. Pages look like the approved mockup
+(`mockups/project-pages.html`, kept next to this document; its text is invented), and *Look* says how.
+
+Every project and article starts the same way:
+1. the title;
+2. one line under it, the entry's `summary`;
+3. for a project, the demo: its cover photo. With a `video`, the photo carries a play button and links to the video
+   on YouTube; nothing from YouTube loads on the site. An article goes straight on; its cover still shows on its card
+   and in link previews;
+4. one quiet line with the date, and the updated date when there is one.
+
+Then the body, which depends on the type. Tags come last, as links to their tag pages. There is no Why / How / Result
+block, no difficulty or time estimate, and no "← Projects" link above the title.
 
 - **projects** (`/projects/<slug>/`): `area: maker | software`, plus an optional `guide` block.
-  - **No `guide` block (showcase):** *What it does*, *How it's built*, *What I learned*, plus links (source repo, related
-    articles).
-  - **With a `guide` block:** the steps are the main content, and the showcase sections shrink to an intro.
-    - Required guide fields: `difficulty`, `time`, `cost`, `parts[]` (name, quantity, optional approximate price,
-      where to buy), `tools[]`.
-    - Body: *What you'll need* (rendered from the fields), numbered steps (diagram or photo, text, copyable code),
-      *Troubleshooting*, *Downloads*.
-    - A sticky "On this page" step list sits beside it.
+  - **No `guide` block (showcase):** the story in the body, then links (source repo, related articles).
+  - **With a `guide` block:** an optional short intro, then *What you'll need*, then the steps.
+    - Required guide fields: `parts[]` (name, quantity, optional approximate price, optional where to buy) and
+      `tools[]`.
+    - *What you'll need* is rendered from the fields: each part with its quantity, and its price and shop link when
+      given, then the tools.
+    - The steps are the body's own `##` headings, unnumbered, with photos, wiring and copyable code. Troubleshooting
+      and downloads sit in the step they belong to.
+    - No "On this page" list *(my call: the approved page has none)*.
   - Adding a guide to a showcase therefore never changes its URL. *(My call: one schema with an optional block, not
     two kinds.)*
 - **articles** (`/articles/<slug>/`): best practices in software and cloud. Normal long-form posts.
 - **learning** (`/learning/`): a data collection of recommended guides, open-source projects and courses (title, URL,
   type, topic, one-line why). Rendered as one page grouped by topic, not as posts.
-- **Tag pages** (`/tags/<tag>/`) list everything with that tag *(my call)*.
+- **Tag pages** (`/tag/<tag>/`) list everything with that tag, as cards. WordPress used the same path, so an old tag
+  link whose slug is unchanged needs no redirect.
 - **Pages:** About (`/about/`), Follow (`/follow/`: the RSS link; email later if ever), and a 404 page.
 - **Every entry:** `publishDate`, `updatedDate?`, `draft`, `tags[]`, `cover`, `summary`, and `legacySlug?` for
   migrated posts.
+  - `summary` is the line under the title, the card's teaser, the RSS description and the link-preview text. It is
+    Prince's own sentence: for a migrated post, the post's original opening sentence, which the body then doesn't
+    repeat; where that sentence doesn't stand alone, a new one Prince approves.
+- **Each project also has:** `video?`, a YouTube watch URL. A migrated post's "Watch the video on YouTube" link moves
+  there from the body.
 - **Each project and article also has:** "Suggest a fix", old comments read-only (new comments later), and Open Graph /
   Twitter link-preview metadata.
+  - "Suggest a fix" and the old comments come after the tags *(my call)*.
   - "Suggest a fix" opens a pre-filled "Content fix" issue on the platform repo.
   - Old comments are rendered with `id="comment-<WordPress id>"`, so old `#comment-NNN` links still land on the right
     comment.
 
-**Navigation:** Projects · Articles · Learning · About; the footer links Follow and RSS. Home shows the newest projects
-and articles together. Learning appears in the navigation once it has entries *(my call)*.
+**Navigation:** Projects · Articles · Learning · About. Learning appears in the navigation once it has entries *(my
+call)*. The footer is in *Look*.
+
+**Home:** "PrinceTronics" as the page title, the About page's `summary` (its opening line) under it, then the newest projects and
+articles together as cards. The Projects, Articles and tag pages list theirs as the same cards. A card is the cover,
+"Project" or "Article" with the month and year, the title, and the `summary`.
+
+## Look
+
+Calm and light, in the greys of the WordPress site, with the sky blue of its logo as the accent.
+
+- **Header:** a thin charcoal (`#2f3238`) bar. On the left, the mark: a sky-blue (`#74b6d8`) rounded tile holding a
+  serif "P", written as text, not an image, and linking home. The navigation on the right; the current section's item
+  is white with a sky-blue underline. No site name in the header.
+- **Footer:** the same charcoal, with "PrinceTronics" and the Follow, RSS and About links.
+- **Type:** headings in Source Serif 4 at weight 300; body text in Inter at 400, and 500 for the navigation and tag
+  pills. Both fonts are served from the site itself,
+  not from Google *(my call)*.
+- **Colour:** headings `#444`, text `#666`, on white. No black text. Links and tag pills in a darker shade of the sky
+  blue; the sky blue itself only on charcoal or as an accent, since on white it is too light for text.
+- **Contrast:** all text meets WCAG 2.2 AA, 4.5:1 for normal text, so small grey text such as dates and captions is no
+  lighter than `#767676`.
+- **Dark mode:** follows the reader's system setting, with the same charcoal, greys and sky blue and the same
+  contrast *(my call)*.
+- **Code blocks:** dark, with a copy button.
 
 ## Migration
 
@@ -117,8 +158,10 @@ and articles together. Learning appears in the navigation once it has entries *(
   - `/<old-slug>/` and **any path under it** (feed, embed, comment pages) → the post's new URL.
   - `/feed/` and its variants → `/rss.xml`.
   - Comments feeds → 410.
-  - `/category/<x>/` and `/tag/<x>/` → the tag page of the category or tag with that name, otherwise `/`. The match
-    goes by name: WordPress drops `+` and `#` from slugs, and the new tag URLs spell them out.
+  - `/category/<x>/`, and `/tag/<x>/` where `<x>` is not the new slug, → the tag page of the category or tag with that
+    name, otherwise `/`. The match goes by name: WordPress drops `+` and `#` from slugs, and the new tag URLs spell
+    them out. A `/tag/<x>/` whose slug is unchanged is that tag page, served as is; its `page/N/` and `feed/` forms
+    redirect to it.
   - `/?p=<id>`, `/?page_id=<id>` and `/?attachment_id=<id>` → the new URL of that post, page or its post.
   - `/wp-sitemap*.xml` → Astro's sitemap index.
   - WordPress internals → 410.
@@ -263,12 +306,12 @@ New comment posting and new projects or articles are not launch blockers.
 
 ## Left to the builder
 
-- the visual design within the mockup's structure
+- spacing, sizes and the dark palette's exact values, within *Look*
 - the Astro add-ons (MDX, sitemap, RSS, image handling)
 - the infrastructure-as-code tool (chosen: AWS CDK in TypeScript, in `infra/`, with cdk-nag on every synth) and the
   converter
 - the content/platform combining mechanism
-- the code-block and "On this page" components
+- the code-block component
 - the function's internal structure, within the size limit
 
 ## Open
