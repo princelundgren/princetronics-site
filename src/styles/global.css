@@ -97,22 +97,34 @@ td {
 
 .entry-list {
   display: grid;
-  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+  gap: 2rem 1.5rem;
 }
 
 .entry-card {
+  position: relative;
   display: grid;
-  gap: 1rem;
+  align-content: start;
+  gap: 0.5rem;
 }
 
-@media (min-width: 40rem) {
-  .entry-card {
-    grid-template-columns: 16rem 1fr;
-  }
+.entry-card img {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+  border-radius: 0.5rem;
 }
 
+.entry-card p,
 .entry-card h2 {
   margin: 0;
+}
+
+.entry-card h2 a::after {
+  content: '';
+  position: absolute;
+  inset: 0;
 }
 
 .comment-thread {
