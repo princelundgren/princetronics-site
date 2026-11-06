@@ -30,6 +30,9 @@ CONTENT_DIR=../path/to/content npm run dev
 - `npm run test:dist`: builds, then tests the built site (`test-dist/`)
 - `npm run check`: `astro check`
 - `npx vitest run test/<file>.test.ts`: one test file
+- `npm run url-check -- --inventory <file> --dist dist --function edge-dist/viewer-request.js`: every inventory URL
+  (`[{ url, gone? }]`) must end in 200, or 410 when `gone`, within two redirects; `--live [--connect-to <host>]`
+  instead sends real requests through curl, one every 400 ms
 
 Stop `astro dev` (`npx astro dev stop`) before a build: the build regenerates `.astro/`, which the dev server reads,
 and a build against another content folder leaves a running dev server failing to render entries.

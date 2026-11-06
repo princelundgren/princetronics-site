@@ -11,8 +11,9 @@
     "preview": "astro preview",
     "check": "astro check",
     "test": "vitest run --dir test",
-    "test:dist": "astro build && vitest run --dir test-dist",
-    "build:edge": "tsx edge/build-function.ts"
+    "test:dist": "astro build && npm run build:edge && vitest run --dir test-dist",
+    "build:edge": "tsx edge/build-function.ts",
+    "url-check": "tsx edge/url-check.ts"
   },
   "dependencies": {
     "@astrojs/mdx": "^8.1.2",
