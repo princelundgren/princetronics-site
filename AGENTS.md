@@ -59,5 +59,12 @@ A CDK app with its own package (`cd infra && npm ci`). Synth reads the viewer-re
 - No client-side JavaScript except the code-block copy button.
 - The design is `docs/superpowers/specs/2026-11-05-princetronics-rebuild-design.md`; change it with the code it
   describes.
-- CI runs on GitHub-hosted runners, actions pinned to full commit SHAs, with a read-only token.
+- CI runs on GitHub-hosted runners, actions pinned to full commit SHAs, with a read-only token; the Claude review's
+  token can also comment on pull requests.
 - Signed commits; changes land through pull requests.
+- **An agent merges only its own pull request**, once every check is green and Claude's review is read: the summary
+  comment whose first line is `## Claude review of <sha>` must name the head. With no such summary, stop and leave the
+  merge to the maintainer, `princelundgren`. Fix a 🔴 or answer why not; fix or answer a 🟡. Reply in each thread the
+  review opened, then resolve it; a thread a person opened gets a reply and stays theirs to resolve. Merge with a merge
+  commit, as one command:
+  `gh pr merge <n> --repo princelundgren/princetronics-site --merge --delete-branch --match-head-commit <sha>`
