@@ -32,7 +32,7 @@ updates:
     cooldown:
       default-days: 7
       semver-major-days: 14
-    # An ignore covers both directories, so infra's TypeScript waits for the site's.
+    # An ignore covers both directories: the site's TypeScript stays at 6, and infra's at 7 only because the ignore is shared.
     ignore:
       # The site's @astrojs/check peers on TypeScript 5 or 6: lift once it and astro check support TypeScript 7.
       - dependency-name: "typescript"
