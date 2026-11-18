@@ -1,6 +1,6 @@
 ---
 status: building
-verified: 2026-11-06
+verified: 2026-11-18
 governs:
   - src/**
   - astro.config.mjs
