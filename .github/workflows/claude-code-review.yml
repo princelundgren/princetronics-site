@@ -82,7 +82,7 @@ jobs:
             sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
           fi
 
-      - uses: anthropics/claude-code-action@4845bacbb38b3c4b15d948f035349786f678e068 # v1.0.267
+      - uses: anthropics/claude-code-action@4fa93a88de49bbef68b10eb15aabedf28ca0e1ed # v1.0.271
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -92,10 +92,10 @@ jobs:
           # The review prompt is GitHub Docs' "Review code" prompt file
           # (https://docs.github.com/en/copilot/tutorials/customization-library/prompt-files/review-code),
           # CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Changed: it reads AGENTS.md
-          # first, reviews this pull request instead of selected code, adds drift from README.md and
-          # AGENTS.md, posts a Suggestion only when it names a change, leaves an empty section at
-          # "None." and puts what it checked and found sound under Good Practices, drops the
-          # editor's focus input, and adds how to read and post.
+          # first, reviews this pull request instead of selected code, adds a Correctness area, adds
+          # drift from README.md and AGENTS.md, posts a Suggestion only when it names a change,
+          # leaves an empty section at "None." and puts what it checked and found sound under Good
+          # Practices, drops the editor's focus input, and adds how to read and post.
           prompt: |
             REPO: ${{ github.repository }}
             PR NUMBER: ${{ github.event.pull_request.number }}
@@ -108,31 +108,36 @@ jobs:
 
             Read AGENTS.md first: its rules apply to every change, except that an AGENTS.md this pull request changes is material to review. Then analyze this pull request's changes for:
 
-            1. **Security Issues**
+            1. **Correctness**
+               - Logic errors and edge cases
+               - Race conditions and broken invariants
+               - Unhandled errors
+
+            2. **Security Issues**
                - Input validation and sanitization
                - Authentication and authorization
                - Data exposure risks
                - Injection vulnerabilities
 
-            2. **Performance & Efficiency**
+            3. **Performance & Efficiency**
                - Algorithm complexity
                - Memory usage patterns
                - Database query optimization
                - Unnecessary computations
 
-            3. **Code Quality**
+            4. **Code Quality**
                - Readability and maintainability
                - Proper naming conventions
                - Function/class size and responsibility
                - Code duplication
 
-            4. **Architecture & Design**
+            5. **Architecture & Design**
                - Design pattern usage
                - Separation of concerns
                - Dependency management
                - Error handling strategy
 
-            5. **Testing & Documentation**
+            6. **Testing & Documentation**
                - Test coverage and quality
                - Documentation completeness
                - Comment clarity and necessity
