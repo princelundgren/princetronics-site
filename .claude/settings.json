@@ -1,0 +1,17 @@
+{
+  "extraKnownMarketplaces": {
+    "googlechrome": {
+      "source": {
+        "source": "github",
+        "repo": "GoogleChrome/modern-web-guidance",
+        "ref": "v1.0.1"
+      }
+    }
+  },
+  "enabledPlugins": {
+    "modern-web-guidance@googlechrome": true
+  },
+  "env": {
+    "DISABLE_TELEMETRY": "1"
+  }
+}
