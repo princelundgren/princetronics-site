@@ -59,12 +59,14 @@ A CDK app with its own package (`cd infra && npm ci`). Synth reads the viewer-re
 - No client-side JavaScript except the code-block copy button.
 - The design is `docs/superpowers/specs/2026-11-05-princetronics-rebuild-design.md`; change it with the code it
   describes.
-- CI runs on GitHub-hosted runners, actions pinned to full commit SHAs, with a read-only token; the Claude review's
-  token can also comment on pull requests.
+- CI runs on GitHub-hosted runners, actions pinned to full commit SHAs, with a read-only token. The Claude review is
+  the exception: it calls the shared reusable workflow at its moving `v2` tag, which only that repository's maintainer
+  can move, so each release reaches this repository without a pull request here. Its token can also comment on pull
+  requests and get the OIDC token that reads the review's Claude token.
 - Signed commits; changes land through pull requests.
 - **An agent merges only its own pull request**, once every check is green and Claude's review is read: the summary
   comment whose first line is `## Claude review of <sha>` must name the head. With no such summary, stop and leave the
-  merge to the maintainer, `princelundgren`. Fix a 🔴 or answer why not; fix or answer a 🟡. Reply in each thread the
-  review opened, then resolve it; a thread a person opened gets a reply and stays theirs to resolve. Merge with a merge
-  commit, as one command:
+  merge to the maintainer, `princelundgren`. Fix a 🔴 or answer why not; fix or answer a 🟡; fix a 🔵 only in a push
+  that also fixes something else, otherwise answer it. Reply in each thread the review opened, then resolve it; a
+  thread a person opened gets a reply and stays theirs to resolve. Merge with a merge commit, as one command:
   `gh pr merge <n> --repo princelundgren/princetronics-site --merge --delete-branch --match-head-commit <sha>`
