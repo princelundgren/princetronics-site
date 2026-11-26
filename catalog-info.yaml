@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: princetronics-site
+  description: Astro site for princetronics.com, with maker build guides and software projects
+spec:
+  type: website
+  lifecycle: experimental
+  owner: prince
+  system: websites
